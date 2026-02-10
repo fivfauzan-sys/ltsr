@@ -11,6 +11,65 @@
             --bg: #f8fafc;
         }
 
+        /* SISTEM LOGIN OVERLAY */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: 0.5s;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            width: 320px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border-top: 8px solid var(--accent);
+        }
+
+        .login-box h3 { margin-bottom: 10px; color: var(--primary); }
+        .login-box p { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .login-box input:focus { border-color: var(--accent); }
+
+        .btn-verify {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* EFEK BLUR UNTUK KONTEN UTAMA */
+        #content-wrapper {
+            filter: blur(15px);
+            pointer-events: none;
+            transition: 0.8s ease;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -168,6 +227,17 @@
 </head>
 <body>
 
+<div id="login-overlay">
+    <div class="login-box">
+        <h3>Akses Terbatas</h3>
+        <p>Masukkan Kode Verifikasi Petugas SDA Jakarta Selatan</p>
+        <input type="password" id="pass-field" maxlength="4" placeholder="••••">
+        <button class="btn-verify" onclick="verifikasi()">Masuk Portal</button>
+        <div id="error-txt" style="color: #ef4444; font-size: 0.8rem; margin-top: 10px; display: none; font-weight: bold;">KODE SALAH! HUBUNGI ADMIN.</div>
+    </div>
+</div>
+
+<div id="content-wrapper">
 <header>
     <h1 style="margin: 0; font-size: 2.5rem;">DASHBOARD MOBILE</h1>
     <p style="color: var(--accent); margin: 10px 0 0 0; font-weight: bold; letter-spacing: 3px;">Seksi Perencanaan Suku Dinas Sumber Daya Air Jakarta Selatan</p>
@@ -204,11 +274,39 @@
 </div>
 
 <div id="portal">
-    <button class="btn-back" onclick="tutupModul()">⬅ KEMBALI KE MENU</button>
+    <button class="btn-back" onclick="tutupModul()">⬅ BACK TO DASHBOARD</button>
     <iframe id="app-frame" src=""></iframe>
 </div>
 
 <script>
+// KODE AKSES ANDA
+    const KODE_RAHASIA = "latsar2026"; 
+
+    function verifikasi() {
+        const input = document.getElementById('pass-field').value;
+        const overlay = document.getElementById('login-overlay');
+        const content = document.getElementById('content-wrapper');
+        const error = document.getElementById('error-txt');
+
+        if(input === KODE_RAHASIA) {
+            overlay.style.opacity = "0";
+            setTimeout(() => {
+                overlay.style.display = "none";
+                content.style.filter = "none";
+                content.style.pointerEvents = "auto";
+                document.body.style.overflow = "auto";
+            }, 500);
+        } else {
+            error.style.display = "block";
+            document.getElementById('pass-field').value = "";
+        }
+    }
+
+    // Support tombol Enter
+    document.getElementById('pass-field').addEventListener("keyup", function(event) {
+        if (event.key === "Enter") { verifikasi(); }
+    });
+
     function bukaModul(file) {
         document.getElementById('portal').style.display = 'block';
         document.getElementById('app-frame').src = file;
