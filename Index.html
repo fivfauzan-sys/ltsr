@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDA Jaksel - Engineering Control Center</title>
+    <style>
+        :root {
+            --primary: #0f172a; /* Navy Deep */
+            --accent: #f59e0b;  /* Gold */
+            --glow: rgba(245, 158, 11, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            background: #e2e8f0;
+            /* Background berpola teknik/grid */
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* GLASS HEADER */
+        #main-header {
+            background: var(--primary);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            border-bottom: 8px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--accent);
+        }
+
+        .header-subtitle {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* DASHBOARD GRID */
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* CARD STYLE */
+        .calc-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calc-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* ICON SHAPE */
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px var(--glow);
+            border: 2px solid var(--accent);
+        }
+
+        .calc-card h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .calc-card p {
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            height: 80px;
+        }
+
+        /* BUTTON PULSE */
+        .btn-launch {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+            border: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-launch:hover {
+            background: var(--accent);
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* BADGE */
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            background: #dcfce7;
+            color: #166534;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header id="main-header">
+    <div class="header-content">
+        <div class="header-title">SDA CALCULATOR ONLINE</div>
+        <div class="header-subtitle">SEKSI PERENCANAAN SUKU DINAS SUMBER DAYA AIR JAKARTA SELATAN</div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="calc-card">
+        <span class="status-badge">Ready v2.1</span>
+        <div class="icon-circle">💧</div>
+        <h2>Pump Storage Simulator</h2>
+        <p>Optimasi kapasitas waduk dan manajemen pompa untuk pengendalian banjir wilayah Jakarta Selatan.</p>
+        <a href="pump-storage.html" class="btn-launch">Buka Simulator <span>→</span></a>
+    </div>
+
+    <div class="calc-card">
+        <span class="status-badge">Ready v7.35</span>
+        <div class="icon-circle">⚙️</div>
+        <h2>Pipe Energy Calculator</h2>
+        <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa perencanaan.</p>
+        <a href="pipe-energy.html" class="btn-launch">Buka Calculator <span>→</span></a>
+    </div>
+
+    <div class="calc-card" style="filter: grayscale(0.8); cursor: not-allowed;">
+        <span class="status-badge" style="background:#fee2e2; color:#991b1b">Development</span>
+        <div class="icon-circle" style="background:#64748b">📊</div>
+        <h2>Rainfall Analysis</h2>
+        <p>Perhitungan Intensitas Curah Hujan (IDF Curve) dan Debit Banjir Rancangan Metode Nakayasu.</p>
+        <a href="#" class="btn-launch" style="background:#94a3b8; pointer-events: none;">Coming Soon</a>
+    </div>
+</div>
+
+<footer>
+    <strong>AsproXSudinJS</strong> • 2026 Engineering Portal<br>
+    Seksi Perencanaan - Sudin Sumber Daya Air Jakarta Selatan
+</footer>
+
+</body>
+</html>
