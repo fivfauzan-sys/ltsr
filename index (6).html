@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDA Dashboard - Seksi Perencanaan</title>
+    <style>
+        :root { --navy: #0f172a; --gold: #f59e0b; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--navy); overflow: hidden; }
+        
+        /* MENU UTAMA */
+        #main-menu {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; text-align: center; color: white;
+        }
+        .container { display: flex; gap: 25px; margin-top: 40px; }
+        .card {
+            background: white; color: var(--navy); padding: 40px; border-radius: 15px;
+            width: 280px; cursor: pointer; transition: 0.3s; border-top: 10px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .card:hover { transform: translateY(-15px); box-shadow: 0 15px 40px rgba(245, 158, 11, 0.4); }
+        .card h2 { margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .card p { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+
+        /* APLIKASI CONTAINER */
+        #app-wrapper { display: none; width: 100%; height: 100vh; position: relative; background: white; }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        /* TOMBOL KEMBALI */
+        .floating-back {
+            position: fixed; bottom: 30px; left: 30px; z-index: 99999;
+            background: var(--gold); color: var(--navy); border: none;
+            padding: 12px 25px; border-radius: 50px; font-weight: 900;
+            cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            font-size: 0.9rem;
+        }
+        .floating-back:hover { background: white; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+<div id="main-menu">
+    <h1 style="font-size: 2.5rem; margin-bottom: 5px;">SISTEM INFORMASI SDA</h1>
+    <p style="color: var(--gold); font-weight: bold; font-size: 1.1rem;">Seksi Perencanaan Sudin SDA Jakarta Selatan</p>
+    
+    <div class="container">
+        <div class="card" onclick="tampilkanApp('pipe-energy.html')">
+            <h2>Pipe Energy</h2>
+            <p>Aplikasi kalkulator energi pipa dan grafik HGL/EGL asli.</p>
+            <div style="margin-top:20px; font-weight:bold; color:var(--gold-dark)">KLIK UNTUK BUKA</div>
+        </div>
+        
+        <div class="card" onclick="tampilkanApp('pump-storage.html')">
+            <h2>Pump Storage</h2>
+            <p>Simulasi siklus pompa dan TMA kolam olakan asli.</p>
+            <div style="margin-top:20px; font-weight:bold; color:var(--gold-dark)">KLIK UNTUK BUKA</div>
+        </div>
+    </div>
+</div>
+
+<div id="app-wrapper">
+    <button class="floating-back" onclick="tutupApp()">⬅ KEMBALI KE MENU UTAMA</button>
+    <iframe id="frame-aplikasi" src=""></iframe>
+</div>
+
+<script>
+    function tampilkanApp(namaFile) {
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('app-wrapper').style.display = 'block';
+        document.getElementById('frame-aplikasi').src = namaFile;
+    }
+
+    function tutupApp() {
+        document.getElementById('main-menu').style.display = 'flex';
+        document.getElementById('app-wrapper').style.display = 'none';
+        document.getElementById('frame-aplikasi').src = '';
+    }
+</script>
+
+</body>
+</html>
