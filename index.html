@@ -183,29 +183,21 @@
     </div>
 </header>
 
-<div class="container">
-    <div class="calc-card">
-        <div class="icon-circle">💧</div>
-        <h2>Pump Storage Simulator</h2>
-        <p> Simulasi .</p>
-        <a href="pump-storage.html" class="btn-launch">Buka Simulator <span>→</span></a>
-    </div>
-
-    <div class="calc-card">
-        <div class="icon-circle">⚙️</div>
-        <h2>Pipe Energy Calculator</h2>
-        <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa perencanaan.</p>
-        <a href="pipe-energy.html" class="btn-launch">Buka Calculator <span>→</span></a>
-    </div>
-
-    <div class="calc-card">
-        <span class="status-badge badge-new">New Feature</span>
-        <div class="icon-circle">🌍</div>
-        <h2>Spatial Area Analyzer</h2>
-        <p>Analisis spasial Catchment Area, konversi koordinat UTM, dan deteksi stasiun hujan secara otomatis.</p>
-        <a href="peta-spasial.html" class="btn-launch">Buka WebGIS <span>→</span></a>
+    <div class="container">
+        <div class="card" onclick="tampilkanApp('pipe-energy.html')">
+            <h2>Pipe Energy</h2>
+            <p>Aplikasi kalkulator energi pipa dan grafik HGL/EGL asli.</p>
+            <div style="margin-top:20px; font-weight:bold; color:var(--gold-dark)">KLIK UNTUK BUKA</div>
+        </div>
+        
+        <div class="card" onclick="tampilkanApp('pump-storage.html')">
+            <h2>Pump Storage</h2>
+            <p>Simulasi siklus pompa dan TMA kolam olakan asli.</p>
+            <div style="margin-top:20px; font-weight:bold; color:var(--gold-dark)">KLIK UNTUK BUKA</div>
+        </div>
     </div>
 </div>
+
 <div id="app-wrapper">
     <button class="floating-back" onclick="tutupApp()">⬅ KEMBALI KE MENU UTAMA</button>
     <iframe id="frame-aplikasi" src=""></iframe>
@@ -224,6 +216,7 @@
         document.getElementById('frame-aplikasi').src = '';
     }
 </script>
+
     
 <footer>
     <strong>for Latsar 2026</strong> • 2026 Engineering Portal<br>
@@ -232,6 +225,7 @@
 
 </body>
 </html>
+
 
 
 
