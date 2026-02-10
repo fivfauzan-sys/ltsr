@@ -6,8 +6,8 @@
     <title>SDA Jaksel - Engineering Control Center</title>
     <style>
         :root {
-            --primary: #0f172a; /* Navy Deep */
-            --accent: #f59e0b;  /* Gold */
+            --primary: #0f172a; 
+            --accent: #f59e0b;  
             --glow: rgba(245, 158, 11, 0.4);
             --card-bg: rgba(255, 255, 255, 0.95);
         }
@@ -22,143 +22,60 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
-        /* DASHBOARD WRAPPER */
-        #dashboard-content {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+        #dashboard-content { display: flex; flex-direction: column; min-height: 100vh; }
 
         #main-header {
-            background: var(--primary);
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-            position: relative;
-            border-bottom: 8px solid var(--accent);
+            background: var(--primary); color: white; padding: 60px 20px;
+            text-align: center; border-bottom: 8px solid var(--accent);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .header-title {
-            font-size: 2.8rem;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 0px var(--accent);
-        }
-
-        .header-subtitle {
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-top: 10px;
-            letter-spacing: 2px;
-        }
+        .header-title { font-size: 2.8rem; font-weight: 900; text-transform: uppercase; text-shadow: 2px 2px 0px var(--accent); }
+        .header-subtitle { color: var(--accent); font-size: 1.2rem; font-weight: 600; margin-top: 10px; letter-spacing: 2px; }
 
         .container {
-            max-width: 1200px;
-            margin: -40px auto 50px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            z-index: 10;
+            max-width: 1200px; margin: -40px auto 50px auto; padding: 0 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;
         }
 
-        /* CARD STYLE UMUM */
         .calc-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 40px;
+            background: var(--card-bg); border-radius: 24px; padding: 40px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.3);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            position: relative;
-            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); cursor: pointer; position: relative;
         }
 
-        /* EFEK HOVER HANYA UNTUK YANG TIDAK DI-LOCK */
         .calc-card:not(.locked-card):hover {
             transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
-            border-color: var(--accent);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2); border-color: var(--accent);
         }
 
-        /* KHUSUS CARD TERKUNCI */
-        .locked-card {
-            cursor: not-allowed !important;
-            filter: grayscale(1);
-            opacity: 0.6;
-        }
+        .locked-card { cursor: not-allowed !important; filter: grayscale(1); opacity: 0.6; }
 
         .icon-circle {
-            width: 70px; height: 70px;
-            background: var(--primary);
-            border-radius: 18px;
+            width: 70px; height: 70px; background: var(--primary); border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; margin-bottom: 25px;
-            box-shadow: 0 10px 20px var(--glow);
-            border: 2px solid var(--accent);
+            font-size: 2.2rem; margin-bottom: 25px; border: 2px solid var(--accent);
         }
 
         .btn-launch {
-            background: var(--primary);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 800;
-            text-align: center;
-            text-transform: uppercase;
-            margin-top: auto;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: var(--primary); color: white; padding: 16px; border-radius: 12px;
+            font-weight: 800; text-align: center; text-transform: uppercase; margin-top: auto;
         }
 
-        .calc-card:not(.locked-card):hover .btn-launch {
-            background: var(--accent);
-            color: var(--primary);
-        }
+        .calc-card:not(.locked-card):hover .btn-launch { background: var(--accent); color: var(--primary); }
 
-        /* BADGE & TOMBOL DISABLE */
-        .status-badge {
-            position: absolute; top: 20px; right: 20px;
-            padding: 5px 12px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 900;
-        }
-        .badge-locked { background: #fee2e2; color: #991b1b; }
-        .btn-disabled { background: #94a3b8; color: #e2e8f0; }
+        .status-badge { position: absolute; top: 20px; right: 20px; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 900; background: #fee2e2; color: #991b1b; }
 
         /* PORTAL SYSTEM */
-        #app-portal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100vh;
-            background: white;
-            z-index: 9999;
-        }
-
+        #app-portal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: white; z-index: 9999; }
         #app-frame { width: 100%; height: 100%; border: none; }
-
         .btn-back-floating {
-            position: fixed;
-            bottom: 30px; left: 30px;
-            z-index: 10000;
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-weight: 900;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            text-transform: uppercase;
-            font-size: 0.8rem;
+            position: fixed; bottom: 30px; left: 30px; z-index: 10000;
+            background: var(--accent); color: var(--primary); border: none;
+            padding: 15px 25px; border-radius: 50px; font-weight: 900; cursor: pointer;
         }
 
         footer { margin-top: auto; padding: 40px; text-align: center; color: #64748b; }
@@ -168,10 +85,8 @@
 
 <div id="dashboard-content">
     <header id="main-header">
-        <div class="header-content">
-            <div class="header-title">SDA CALCULATOR ONLINE</div>
-            <div class="header-subtitle">RENTEK SDA JS</div>
-        </div>
+        <div class="header-title">SDA CALCULATOR ONLINE</div>
+        <div class="header-subtitle">RENTEK SDA JS</div>
     </header>
 
     <div class="container">
@@ -179,22 +94,22 @@
             <div class="icon-circle">💧</div>
             <h2>Pump Storage Simulator</h2>
             <p>Simulasi siklus operasional pompa dan monitoring TMA kolam olakan.</p>
-            <div class="btn-launch">Buka Simulator <span>→</span></div>
+            <div class="btn-launch">Buka Simulator →</div>
         </div>
 
         <div class="calc-card" onclick="bukaModul('pipe-energy.html')">
             <div class="icon-circle">⚙️</div>
             <h2>Pipe Energy Calculator</h2>
-            <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi pipa.</p>
-            <div class="btn-launch">Buka Calculator <span>→</span></div>
+            <p>Analisis distribusi tekanan, head loss, dan verifikasi material pipa.</p>
+            <div class="btn-launch">Buka Calculator →</div>
         </div>
 
         <div class="calc-card locked-card" onclick="alert('Fitur Spatial Area Analyzer sedang dalam pengembangan.')">
-            <span class="status-badge badge-locked">🔒 LOCKED</span>
+            <span class="status-badge">🔒 LOCKED</span>
             <div class="icon-circle">🌍</div>
             <h2>Spatial Area Analyzer</h2>
             <p>Analisis Catchment Area dan deteksi stasiun hujan secara otomatis.</p>
-            <div class="btn-launch btn-disabled">Belum Tersedia</div>
+            <div class="btn-launch" style="background:#94a3b8">Belum Tersedia</div>
         </div>
     </div>
 
@@ -210,16 +125,25 @@
 </div>
 
 <script>
+    // FUNGSI UTAMA UNTUK MEMBUKA HALAMAN
     function bukaModul(url) {
-        document.getElementById('app-portal').style.display = 'block';
-        document.getElementById('dashboard-content').style.display = 'none';
-        document.getElementById('app-frame').src = url;
+        const portal = document.getElementById('app-portal');
+        const frame = document.getElementById('app-frame');
+        const dashboard = document.getElementById('dashboard-content');
+
+        dashboard.style.display = 'none';
+        portal.style.display = 'block';
+        frame.src = url;
     }
 
     function kembaliKeMenu() {
-        document.getElementById('app-portal').style.display = 'none';
-        document.getElementById('dashboard-content').style.display = 'flex';
-        document.getElementById('app-frame').src = '';
+        const portal = document.getElementById('app-portal');
+        const frame = document.getElementById('app-frame');
+        const dashboard = document.getElementById('dashboard-content');
+
+        portal.style.display = 'none';
+        dashboard.style.display = 'flex';
+        frame.src = ''; // Bersihkan iframe
     }
 </script>
 
