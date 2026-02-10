@@ -16,7 +16,6 @@
             font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
             background: #e2e8f0;
-            /* Background berpola teknik/grid */
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 30px 30px;
             color: var(--primary);
@@ -25,7 +24,13 @@
             flex-direction: column;
         }
 
-        /* GLASS HEADER */
+        /* WRAPPER DASHBOARD */
+        #dashboard-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         #main-header {
             background: var(--primary);
             color: white;
@@ -34,11 +39,6 @@
             position: relative;
             border-bottom: 8px solid var(--accent);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 2;
         }
 
         .header-title {
@@ -58,7 +58,6 @@
             letter-spacing: 2px;
         }
 
-        /* DASHBOARD GRID */
         .container {
             max-width: 1200px;
             margin: -40px auto 50px auto;
@@ -69,20 +68,17 @@
             z-index: 10;
         }
 
-        /* CARD STYLE */
         .calc-card {
             background: var(--card-bg);
             border-radius: 24px;
             padding: 40px;
-            text-align: left;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(255,255,255,0.3);
             display: flex;
             flex-direction: column;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             position: relative;
-            overflow: hidden;
-            text-decoration: none; /* Menghilangkan garis bawah link pada card */
+            cursor: pointer;
         }
 
         .calc-card:hover {
@@ -91,78 +87,74 @@
             border-color: var(--accent);
         }
 
-        /* ICON SHAPE */
         .icon-circle {
-            width: 70px;
-            height: 70px;
+            width: 70px; height: 70px;
             background: var(--primary);
             border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            margin-bottom: 25px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; margin-bottom: 25px;
             box-shadow: 0 10px 20px var(--glow);
             border: 2px solid var(--accent);
         }
 
-        .calc-card h2 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            margin: 0 0 15px 0;
-            color: var(--primary);
-        }
-
-        .calc-card p {
-            color: #475569;
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            height: 80px;
-        }
-
-        /* BUTTON PULSE */
         .btn-launch {
             background: var(--primary);
             color: white;
-            text-decoration: none;
             padding: 16px;
             border-radius: 12px;
             font-weight: 800;
             text-align: center;
             text-transform: uppercase;
-            border: none;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             margin-top: auto;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        .btn-launch:hover {
+        .calc-card:hover .btn-launch {
             background: var(--accent);
             color: var(--primary);
-            box-shadow: 0 0 20px var(--accent);
         }
 
-        /* BADGE */
-        .status-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        /* --- CODING UNTUK PORTAL APLIKASI & TOMBOL BACK --- */
+        
+        #app-portal {
+            display: none; /* Sembunyi di awal */
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: white;
+            z-index: 9999;
+        }
+
+        #app-frame {
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        .btn-back-floating {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 10000;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
             font-weight: 900;
-            background: #dcfce7;
-            color: #166534;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: 0.3s;
         }
 
-        .badge-new {
-            background: #e0f2fe;
-            color: #0369a1;
+        .btn-back-floating:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            color: white;
         }
 
         footer {
@@ -170,52 +162,75 @@
             padding: 40px;
             text-align: center;
             color: #64748b;
-            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-<header id="main-header">
-    <div class="header-content">
-        <div class="header-title">SDA CALCULATOR ONLINE</div>
-        <div class="header-subtitle">SEKSI PERENCANAAN SUKU DINAS SUMBER DAYA AIR JAKARTA SELATAN</div>
-    </div>
-</header>
+<div id="dashboard-content">
+    <header id="main-header">
+        <div class="header-content">
+            <div class="header-title">SDA CALCULATOR ONLINE</div>
+            <div class="header-subtitle">RENTEK SDA JS</div>
+        </div>
+    </header>
 
-<div class="container">
-    <div class="calc-card">
-        <div class="icon-circle">💧</div>
-        <h2>Pump Storage Simulator</h2>
-        <p> Simulasi .</p>
-        <a href="pump-storage.html" class="btn-launch">Buka Simulator <span>→</span></a>
+    <div class="container">
+        <div class="calc-card" onclick="bukaHalaman('pump-storage.html')">
+            <div class="icon-circle">💧</div>
+            <h2>Pump Storage Simulator</h2>
+            <p>Simulasi siklus operasional pompa dan monitoring TMA kolam olakan.</p>
+            <div class="btn-launch">Buka Simulator <span>→</span></div>
+        </div>
+
+        <div class="calc-card" onclick="bukaHalaman('pipe-energy.html')">
+            <div class="icon-circle">⚙️</div>
+            <h2>Pipe Energy Calculator</h2>
+            <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa.</p>
+            <div class="btn-launch">Buka Calculator <span>→</span></div>
+        </div>
+
+        <div class="calc-card" onclick="bukaHalaman('peta-spasial.html')">
+            <span class="status-badge badge-new" style="position: absolute; top: 20px; right: 20px; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">New</span>
+            <div class="icon-circle">🌍</div>
+            <h2>Spatial Area Analyzer</h2>
+            <p>Analisis Catchment Area dan deteksi stasiun hujan secara otomatis.</p>
+            <div class="btn-launch">Buka WebGIS <span>→</span></div>
+        </div>
     </div>
 
-    <div class="calc-card">
-        <div class="icon-circle">⚙️</div>
-        <h2>Pipe Energy Calculator</h2>
-        <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa perencanaan.</p>
-        <a href="pipe-energy.html" class="btn-launch">Buka Calculator <span>→</span></a>
-    </div>
-
-    <div class="calc-card">
-        <span class="status-badge badge-new">New Feature</span>
-        <div class="icon-circle">🌍</div>
-        <h2>Spatial Area Analyzer</h2>
-        <p>Analisis spasial Catchment Area, konversi koordinat UTM, dan deteksi stasiun hujan secara otomatis.</p>
-        <a href="peta-spasial.html" class="btn-launch">Buka WebGIS <span>→</span></a>
-    </div>
+    <footer>
+        <strong>Rentek SDA JS</strong> • 2026 Engineering Portal<br>
+        Seksi Perencanaan - Sudin Sumber Daya Air Jakarta Selatan
+    </footer>
 </div>
 
-<footer>
-    <strong>For Latsar</strong> • 2026 Engineering Portal<br>
-    Seksi Perencanaan - Sudin Sumber Daya Air Jakarta Selatan
-</footer>
+<div id="app-portal">
+    <button class="btn-back-floating" onclick="kembaliKeMenu()">
+        ⬅ KEMBALI KE DASHBOARD
+    </button>
+    <iframe id="app-frame" src=""></iframe>
+</div>
+
+<script>
+    function bukaHalaman(url) {
+        // Munculkan portal aplikasi
+        document.getElementById('app-portal').style.display = 'block';
+        // Sembunyikan dashboard agar tidak mengganggu scroll
+        document.getElementById('dashboard-content').style.display = 'none';
+        // Masukkan link ke dalam iframe
+        document.getElementById('app-frame').src = url;
+    }
+
+    function kembaliKeMenu() {
+        // Sembunyikan portal aplikasi
+        document.getElementById('app-portal').style.display = 'none';
+        // Munculkan kembali dashboard
+        document.getElementById('dashboard-content').style.display = 'flex';
+        // Kosongkan iframe agar simulasi berhenti (hemat RAM)
+        document.getElementById('app-frame').src = '';
+    }
+</script>
 
 </body>
 </html>
-
-
-
-
-
