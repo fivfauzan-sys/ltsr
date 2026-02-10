@@ -10,6 +10,7 @@
             --accent: #f59e0b;  /* Gold */
             --glow: rgba(245, 158, 11, 0.4);
             --card-bg: rgba(255, 255, 255, 0.95);
+            --locked: #cbd5e1;
         }
 
         body {
@@ -22,13 +23,15 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
-        /* WRAPPER DASHBOARD */
+        /* WRAPPER DASHBOARD UTAMA */
         #dashboard-content {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: 0.3s;
         }
 
         #main-header {
@@ -68,6 +71,7 @@
             z-index: 10;
         }
 
+        /* CARD STYLE */
         .calc-card {
             background: var(--card-bg);
             border-radius: 24px;
@@ -81,10 +85,17 @@
             cursor: pointer;
         }
 
-        .calc-card:hover {
+        .calc-card:hover:not(.locked-card) {
             transform: translateY(-15px) scale(1.02);
             box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
             border-color: var(--accent);
+        }
+
+        /* CARD TERKUNCI (SPATIAL AREA) */
+        .locked-card {
+            cursor: not-allowed;
+            filter: grayscale(1);
+            opacity: 0.7;
         }
 
         .icon-circle {
@@ -97,6 +108,12 @@
             border: 2px solid var(--accent);
         }
 
+        .locked-card .icon-circle {
+            background: #64748b;
+            border-color: #94a3b8;
+            box-shadow: none;
+        }
+
         .btn-launch {
             background: var(--primary);
             color: white;
@@ -107,17 +124,31 @@
             text-transform: uppercase;
             margin-top: auto;
             display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s;
         }
 
-        .calc-card:hover .btn-launch {
+        .calc-card:hover:not(.locked-card) .btn-launch {
             background: var(--accent);
             color: var(--primary);
         }
 
-        /* --- CODING UNTUK PORTAL APLIKASI & TOMBOL BACK --- */
-        
+        .btn-disabled {
+            background: #cbd5e1;
+            color: #64748b;
+        }
+
+        /* BADGE */
+        .status-badge {
+            position: absolute; top: 20px; right: 20px;
+            padding: 5px 12px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 900;
+            text-transform: uppercase;
+        }
+        .badge-locked { background: #fee2e2; color: #991b1b; }
+
+        /* PORTAL APLIKASI (IFRAME SYSTEM) */
         #app-portal {
-            display: none; /* Sembunyi di awal */
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100vh;
@@ -126,14 +157,13 @@
         }
 
         #app-frame {
-            width: 100%; height: 100%;
-            border: none;
+            width: 100%; height: 100%; border: none;
         }
 
+        /* TOMBOL BACK FLOATING */
         .btn-back-floating {
             position: fixed;
-            bottom: 30px;
-            left: 30px;
+            bottom: 30px; left: 30px;
             z-index: 10000;
             background: var(--accent);
             color: var(--primary);
@@ -143,11 +173,8 @@
             font-weight: 900;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
+            display: flex; align-items: center; gap: 10px;
+            text-transform: uppercase; font-size: 0.8rem;
             transition: 0.3s;
         }
 
@@ -158,10 +185,8 @@
         }
 
         footer {
-            margin-top: auto;
-            padding: 40px;
-            text-align: center;
-            color: #64748b;
+            margin-top: auto; padding: 40px;
+            text-align: center; color: #64748b;
         }
     </style>
 </head>
@@ -176,26 +201,26 @@
     </header>
 
     <div class="container">
-        <div class="calc-card" onclick="bukaHalaman('pump-storage.html')">
+        <div class="calc-card" onclick="bukaModul('pump-storage.html')">
             <div class="icon-circle">💧</div>
             <h2>Pump Storage Simulator</h2>
             <p>Simulasi siklus operasional pompa dan monitoring TMA kolam olakan.</p>
             <div class="btn-launch">Buka Simulator <span>→</span></div>
         </div>
 
-        <div class="calc-card" onclick="bukaHalaman('pipe-energy.html')">
+        <div class="calc-card" onclick="bukaModul('pipe-energy.html')">
             <div class="icon-circle">⚙️</div>
             <h2>Pipe Energy Calculator</h2>
-            <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa.</p>
+            <p>Analisis distribusi tekanan, head loss, dan verifikasi material pipa.</p>
             <div class="btn-launch">Buka Calculator <span>→</span></div>
         </div>
 
-        <div class="calc-card" onclick="bukaHalaman('peta-spasial.html')">
-            <span class="status-badge badge-new" style="position: absolute; top: 20px; right: 20px; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">Coming Soon</span>
+        <div class="calc-card locked-card" onclick="alert('Fitur Spatial Area Analyzer masih dalam tahap pengembangan.')">
+            <span class="status-badge badge-locked">🔒 Locked</span>
             <div class="icon-circle">🌍</div>
             <h2>Spatial Area Analyzer</h2>
             <p>Analisis Catchment Area dan deteksi stasiun hujan secara otomatis.</p>
-            <div class="btn-launch">Buka WebGIS <span>→</span></div>
+            <div class="btn-launch btn-disabled">Belum Tersedia <span>✖</span></div>
         </div>
     </div>
 
@@ -206,32 +231,4 @@
 </div>
 
 <div id="app-portal">
-    <button class="btn-back-floating" onclick="kembaliKeMenu()">
-        ⬅ KEMBALI KE DASHBOARD
-    </button>
-    <iframe id="app-frame" src=""></iframe>
-</div>
-
-<script>
-    function bukaHalaman(url) {
-        // Munculkan portal aplikasi
-        document.getElementById('app-portal').style.display = 'block';
-        // Sembunyikan dashboard agar tidak mengganggu scroll
-        document.getElementById('dashboard-content').style.display = 'none';
-        // Masukkan link ke dalam iframe
-        document.getElementById('app-frame').src = url;
-    }
-
-    function kembaliKeMenu() {
-        // Sembunyikan portal aplikasi
-        document.getElementById('app-portal').style.display = 'none';
-        // Munculkan kembali dashboard
-        document.getElementById('dashboard-content').style.display = 'flex';
-        // Kosongkan iframe agar simulasi berhenti (hemat RAM)
-        document.getElementById('app-frame').src = '';
-    }
-</script>
-
-</body>
-</html>
-
+    <button class="btn-back-floating"
