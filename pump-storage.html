@@ -51,10 +51,14 @@
         .bg-running { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .bg-idle { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
         .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; }
-    </style>
-</head>
-<body>
-
+<div class="header">
+    <div class="header-title-box">
+        <div class="header-title">PUMP STORAGE SIMULATION</div>
+        <div class="header-subtitle">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
+    </div>
+    <div class="header-right">
+        <div class="credit-badge">Rentek SDA JS</div> </div>
+</div>
 <div class="header">
     <div class="header-title-box">
         <div class="header-title">PUMP STORAGE SIMULATION</div>
@@ -278,4 +282,5 @@ function runSim() {
 window.onload = () => { updateStaticElevs(); runSim(); };
 </script>
 </body>
+
 </html>
