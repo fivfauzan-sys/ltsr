@@ -3,58 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDA Dashboard - Rentek SDA JS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>SDA Jaksel - Engineering Control Center</title>
     <style>
-        :root { --navy: #0f172a; --accent: #f59e0b; --white: #ffffff; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--navy); overflow: hidden; color: white; }
-        
-        #main-menu {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; text-align: center;
-            background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.1), transparent);
+        :root {
+            --primary: #0f172a; /* Navy Deep */
+            --accent: #f59e0b;  /* Gold */
+            --glow: rgba(245, 158, 11, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.95);
         }
 
-        .header-group { margin-bottom: 50px; }
-        .header-group h1 { font-size: 3rem; margin: 0; font-weight: 800; letter-spacing: -1px; }
-        .header-group p { color: var(--accent); font-weight: 700; font-size: 1.2rem; letter-spacing: 5px; margin-top: 10px; }
-
-        .container { display: flex; gap: 30px; }
-        .card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px); padding: 40px 30px; border-radius: 24px;
-            width: 300px; cursor: pointer; transition: all 0.4s ease;
-            display: flex; flex-direction: column; justify-content: space-between;
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            background: #e2e8f0;
+            /* Background berpola teknik/grid */
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .card:hover { transform: translateY(-15px); border-color: var(--accent); background: rgba(255,255,255,0.06); }
-        .card h2 { font-size: 1.6rem; margin: 0 0 15px 0; }
-        .card p { font-size: 0.95rem; color: #94a3b8; line-height: 1.6; margin-bottom: 30px; }
-        
-        .btn-select { 
-            background: var(--white); color: var(--navy); border: none; 
-            padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; 
-        }
-        .card:hover .btn-select { background: var(--accent); color: white; }
 
-        #app-portal { display: none; width: 100%; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000; background: white; }
-        iframe { width: 100%; height: 100%; border: none; }
-        
-        .back-nav {
-            position: fixed; bottom: 30px; left: 30px; z-index: 1100;
-            background: var(--navy); color: white; border: 1px solid var(--accent);
-            padding: 12px 25px; border-radius: 50px; font-weight: 800; cursor: pointer;
+        /* GLASS HEADER */
+        #main-header {
+            background: var(--primary);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            border-bottom: 8px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--accent);
+        }
+
+        .header-subtitle {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* DASHBOARD GRID */
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* CARD STYLE */
+        .calc-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none; /* Menghilangkan garis bawah link pada card */
+        }
+
+        .calc-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* ICON SHAPE */
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px var(--glow);
+            border: 2px solid var(--accent);
+        }
+
+        .calc-card h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+            color: var(--primary);
+        }
+
+        .calc-card p {
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            height: 80px;
+        }
+
+        /* BUTTON PULSE */
+        .btn-launch {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+            border: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-launch:hover {
+            background: var(--accent);
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* BADGE */
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            background: #dcfce7;
+            color: #166534;
+            text-transform: uppercase;
+        }
+
+        .badge-new {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-<div id="main-menu">
-    <div class="header-group">
-        <h1>SISTEM INFORMASI SDA</h1>
-        <p>RENTEK SDA JS</p>
+<header id="main-header">
+    <div class="header-content">
+        <div class="header-title">SDA CALCULATOR ONLINE</div>
+        <div class="header-subtitle">SEKSI PERENCANAAN SUKU DINAS SUMBER DAYA AIR JAKARTA SELATAN</div>
     </div>
-    
-    <div class="container">
+</header>
+
+<div class="container">
     <div class="calc-card">
         <div class="icon-circle">💧</div>
         <h2>Pump Storage Simulator</h2>
@@ -68,28 +197,20 @@
         <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa perencanaan.</p>
         <a href="pipe-energy.html" class="btn-launch">Buka Calculator <span>→</span></a>
     </div>
+
+    <div class="calc-card">
+        <span class="status-badge badge-new">New Feature</span>
+        <div class="icon-circle">🌍</div>
+        <h2>Spatial Area Analyzer</h2>
+        <p>Analisis spasial Catchment Area, konversi koordinat UTM, dan deteksi stasiun hujan secara otomatis.</p>
+        <a href="peta-spasial.html" class="btn-launch">Buka WebGIS <span>→</span></a>
+    </div>
 </div>
 
-<div id="app-portal">
-    <button class="back-nav" onclick="closeModul()">⬅ BACK TO MENU</button>
-    <iframe id="frame" src=""></iframe>
-</div>
-
- <footer>
-    <strong>Latsar Fauzan</strong> • 2026 Engineering Portal<br>
+<footer>
+    <strong>for Latsar 2026</strong> • 2026 Engineering Portal<br>
     Seksi Perencanaan - Sudin Sumber Daya Air Jakarta Selatan
-</footer>   
-    
-<script>
-    function openModul(file) {
-        document.getElementById('app-portal').style.display = 'block';
-        document.getElementById('frame').src = file;
-    }
-    function closeModul() {
-        document.getElementById('app-portal').style.display = 'none';
-        document.getElementById('frame').src = '';
-    }
-</script>
+</footer>
 
 </body>
 </html>
