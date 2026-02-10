@@ -2,259 +2,78 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDA Dashboard - Jakarta Selatan</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1"></script>
     <style>
-        :root { 
-            --navy: #0a1931; --gold: #f59e0b; --gold-dark: #d97706;
-            --blue-main: #2563eb; --white: #ffffff; --bg: #f1f5f9; 
-            --success: #10b981; --danger: #ef4444; --orange: #f39c12;
-        }
-
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); overflow: hidden; height: 100vh; }
+        :root { --navy: #0f172a; --gold: #f59e0b; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; background: var(--navy); overflow: hidden; }
         
-        /* --- LANDING PAGE (MENU UTAMA) --- */
-        #landing-page {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--navy); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
+        /* --- MENU UTAMA --- */
+        #main-menu {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; text-align: center; color: white;
         }
-        .landing-card {
-            background: white; padding: 40px; border-radius: 20px;
-            text-align: center; border-top: 10px solid var(--gold);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 800px;
+        .card-container { display: flex; gap: 20px; margin-top: 30px; }
+        .menu-card {
+            background: white; color: var(--navy); padding: 30px; border-radius: 15px;
+            width: 250px; cursor: pointer; transition: 0.3s; border-top: 8px solid var(--gold);
         }
-        .menu-options { display: flex; gap: 20px; margin-top: 30px; justify-content: center; }
-        .opt-card {
-            background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px;
-            border-radius: 15px; cursor: pointer; transition: 0.3s; width: 250px;
-        }
-        .opt-card:hover { transform: translateY(-10px); border-color: var(--gold); background: white; }
-        .opt-card h3 { color: var(--navy); margin-bottom: 10px; border: none; padding: 0; }
-        .opt-card p { font-size: 0.85rem; color: #64748b; margin-bottom: 15px; }
+        .menu-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3); }
+        .menu-card h2 { margin: 0 0 10px 0; font-size: 1.2rem; }
+        .menu-card p { font-size: 0.8rem; color: #64748b; margin-bottom: 20px; }
+        .btn-open { background: var(--navy); color: var(--gold); border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
-        /* --- GLOBAL APP STRUCTURE --- */
-        .app-container { display: none; height: 100vh; flex-direction: column; }
-        .active-app { display: flex !important; }
-
-        #top-header {
-            background: var(--navy); color: white; padding: 12px 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 5px solid var(--gold); z-index: 1000;
-        }
+        /* --- CONTAINER APLIKASI --- */
+        #app-container { display: none; width: 100%; height: 100vh; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        /* Tombol Kembali Floating */
         .btn-back {
+            position: fixed; bottom: 20px; left: 20px; z-index: 10000;
             background: var(--gold); color: var(--navy); border: none;
-            padding: 8px 15px; border-radius: 5px; font-weight: 800;
-            cursor: pointer; margin-right: 15px;
+            padding: 10px 20px; border-radius: 50px; font-weight: 800;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 8px;
         }
-        
-        .wrapper { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 400px; background: white; border-right: 1px solid #cbd5e1; overflow-y: auto; padding: 20px; }
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        /* UI Elements */
-        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h3 { font-size: 1rem; color: var(--gold-dark); border-left: 5px solid var(--gold); padding-left: 10px; text-transform: uppercase; font-weight: 900; margin: 20px 0 10px; }
-        label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
-        .hidden { display: none !important; }
-
-        /* Tabel & Canvas */
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        th { background: var(--navy); color: white; padding: 10px; text-transform: uppercase; }
-        td { padding: 8px; border-bottom: 1px solid #f1f5f9; text-align: center; }
-        canvas { width: 100%; background: white; border-radius: 8px; }
     </style>
 </head>
 <body>
 
-<div id="landing-page">
-    <div class="landing-card">
-        <h1 style="margin: 0; color: var(--navy)">Sistem Informasi SDA</h1>
-        <p style="color:#64748b; font-weight: bold; margin-bottom: 30px;">Seksi Perencanaan Sudin SDA Jakarta Selatan</p>
+<div id="main-menu">
+    <h1 style="margin:0">Sistem Informasi SDA</h1>
+    <p style="color: var(--gold)">Seksi Perencanaan Sudin SDA Jakarta Selatan</p>
+    
+    <div class="card-container">
+        <div class="menu-card" onclick="loadApp('pipe-energy.html')">
+            <h2>Pipe Energy</h2>
+            <p>Kalkulator energi pipa dan perhitungan headloss.</p>
+            <button class="btn-open">BUKA</button>
+        </div>
         
-        <div class="menu-options">
-            <div class="opt-card" onclick="openApp('app-pipe')">
-                <h3>Pipe Energy</h3>
-                <p>Kalkulator energi pipa, HGL/EGL, dan perhitungan headloss major/minor.</p>
-                <button style="background:var(--gold); border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer">PILIH MODUL</button>
-            </div>
-            
-            <div class="opt-card" onclick="openApp('app-pump')" style="border-top: 5px solid var(--blue-main)">
-                <h3 style="color:var(--blue-main)">Pump Storage</h3>
-                <p>Simulasi siklus pompa, TMA sensor, dan kapasitas kolam olakan.</p>
-                <button style="background:var(--blue-main); color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer">PILIH MODUL</button>
-            </div>
+        <div class="menu-card" onclick="loadApp('pump-storage.html')">
+            <h2>Pump Storage</h2>
+            <p>Simulasi TMA dan siklus operasional pompa.</p>
+            <button class="btn-open">BUKA</button>
         </div>
     </div>
 </div>
 
-<div id="app-pipe" class="app-container">
-    <div id="top-header">
-        <div style="display:flex; align-items:center">
-            <button class="btn-back" onclick="goBack()">⬅ MENU</button>
-            <div>
-                <div style="font-weight:900; font-size:1.3rem">PIPE ENERGY CALCULATOR</div>
-                <div style="font-size:0.7rem; color:var(--gold)">Sudin Sumber Daya Air Jakarta Selatan</div>
-            </div>
-        </div>
-        <div style="background:rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px; font-size:0.7rem; font-weight:800">PRO v7.35</div>
-    </div>
-    <div class="wrapper">
-        <aside class="sidebar">
-            <h3>Parameter</h3>
-            <div class="card">
-                <label>Metode</label>
-                <select id="calc_method" onchange="runPipeSim()">
-                    <option value="HW">Hazen-Williams (C)</option>
-                    <option value="DW">Darcy-Weisbach (ε)</option>
-                </select>
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>El. Dasar (m)</label><input type="number" id="el_dasar" value="28.088"></div>
-                    <div style="flex:1"><label>El. Pompa (m)</label><input type="number" id="el_pmp" value="29.300"></div>
-                </div>
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>Debit (m³/s)</label><input type="number" id="debit" value="0.25"></div>
-                    <div style="flex:1"><label>Head Pompa (m)</label><input type="number" id="head_pmp" value="20"></div>
-                </div>
-            </div>
-            <h3>Pipa</h3>
-            <div id="pipe-list"></div>
-            <button onclick="addPipe()" style="width:100%; border:2px dashed var(--gold); background:none; padding:10px; cursor:pointer; font-weight:bold; color:var(--gold-dark)">+ TAMBAH SEGMEN</button>
-        </aside>
-        <main class="main-content">
-            <div class="card"><canvas id="pipeCanvas" style="height:350px"></canvas></div>
-            <div class="card">
-                <table>
-                    <thead><tr><th>Objek</th><th>V (m/s)</th><th>HL (m)</th><th>HGL (m)</th><th>Head Sisa</th></tr></thead>
-                    <tbody id="pipe-table-body"></tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-</div>
-
-<div id="app-pump" class="app-container">
-    <div id="top-header" style="border-bottom-color: var(--blue-main)">
-        <div style="display:flex; align-items:center">
-            <button class="btn-back" onclick="goBack()" style="background:var(--blue-main); color:white">⬅ MENU</button>
-            <div>
-                <div style="font-weight:900; font-size:1.3rem">PUMP STORAGE SIMULATOR</div>
-                <div style="font-size:0.7rem; color:var(--blue-main); filter:brightness(1.5)">Simulasi TMA & Siklus Pompa</div>
-            </div>
-        </div>
-    </div>
-    <div class="wrapper">
-        <aside class="sidebar">
-            <h3>Dimensi Kolam</h3>
-            <div class="card">
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>Pjg (m)</label><input type="number" id="p_pjg" value="7.1"></div>
-                    <div style="flex:1"><label>Lbr (m)</label><input type="number" id="p_lbr" value="3.1"></div>
-                </div>
-                <label>Elevasi Dasar (m)</label><input type="number" id="p_ed" value="28.088">
-            </div>
-            <h3>Level Operasional</h3>
-            <div class="card">
-                <label>LWL (m)</label><input type="number" id="p_lwl" value="1.443">
-                <label>HWL 1 (m)</label><input type="number" id="p_hw1" value="2.000">
-                <label>HWL 2 (m)</label><input type="number" id="p_hw2" value="4.500">
-            </div>
-            <button onclick="runPumpSim()" style="width:100%; background:var(--blue-main); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer">JALANKAN SIMULASI</button>
-        </aside>
-        <main class="main-content">
-            <div class="card" style="height:350px"><canvas id="pumpChart"></canvas></div>
-            <div class="card">
-                <table id="pumpTable">
-                    <thead><tr><th>Menit</th><th>Inflow</th><th>TMA</th><th>P1</th><th>P2</th><th>EL. Akhir</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </main>
-    </div>
+<div id="app-container">
+    <button class="btn-back" onclick="closeApp()">⬅ KEMBALI KE MENU</button>
+    <iframe id="app-frame" src=""></iframe>
 </div>
 
 <script>
-    // --- NAVIGASI ---
-    function openApp(appId) {
-        document.getElementById('landing-page').classList.add('hidden');
-        document.querySelectorAll('.app-container').forEach(app => app.classList.remove('active-app'));
-        document.getElementById(appId).classList.add('active-app');
-        
-        // Inisialisasi data sesuai aplikasi yang dibuka
-        if(appId === 'app-pipe') { renderPipeUI(); runPipeSim(); }
-        if(appId === 'app-pump') { runPumpSim(); }
+    function loadApp(url) {
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('app-frame').src = url;
     }
 
-    function goBack() {
-        document.getElementById('landing-page').classList.remove('hidden');
-        document.querySelectorAll('.app-container').forEach(app => app.classList.remove('active-app'));
-    }
-
-    // --- LOGIKA PIPE ENERGY ---
-    let pipes = [{x: 100, y: 35, d: 0.3}, {x: 200, y: 40, d: 0.3}];
-    
-    function addPipe() { pipes.push({x: pipes[pipes.length-1].x + 50, y: 40, d: 0.3}); renderPipeUI(); runPipeSim(); }
-
-    function renderPipeUI() {
-        const list = document.getElementById('pipe-list');
-        list.innerHTML = pipes.map((p, i) => `
-            <div class="card" style="font-size:0.75rem">
-                <b>Segmen ${i+1}</b>
-                <div style="display:flex; gap:5px; margin-top:5px">
-                    <input type="number" value="${p.x}" onchange="pipes[${i}].x=this.value; runPipeSim()">
-                    <input type="number" value="${p.y}" onchange="pipes[${i}].y=this.value; runPipeSim()">
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function runPipeSim() {
-        const Q = parseFloat(document.getElementById('debit').value);
-        const elD = parseFloat(document.getElementById('el_dasar').value);
-        let curHGL = elD + 1.442 + parseFloat(document.getElementById('head_pmp').value);
-        
-        let html = `<tr><td>Pompa</td><td>-</td><td>-</td><td>${curHGL.toFixed(2)}</td><td>-</td></tr>`;
-        pipes.forEach((p, i) => {
-            let v = Q / (0.25 * Math.PI * p.d**2);
-            let hl = 0.5; // Dummy headloss untuk simulasi cepat
-            curHGL -= hl;
-            html += `<tr><td>Segmen ${i+1}</td><td>${v.toFixed(2)}</td><td>${hl.toFixed(2)}</td><td>${curHGL.toFixed(2)}</td><td>${(curHGL-p.y).toFixed(2)}</td></tr>`;
-        });
-        document.getElementById('pipe-table-body').innerHTML = html;
-        
-        const ctx = document.getElementById('pipeCanvas').getContext('2d');
-        ctx.clearRect(0,0,800,400);
-        ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(50, 300); ctx.lineTo(700, 100); ctx.stroke();
-    }
-
-    // --- LOGIKA PUMP STORAGE ---
-    let pChart;
-    function runPumpSim() {
-        const ED = parseFloat(document.getElementById('p_ed').value);
-        const LWL = parseFloat(document.getElementById('p_lwl').value);
-        const Area = parseFloat(document.getElementById('p_pjg').value) * parseFloat(document.getElementById('p_lbr').value);
-        
-        let labels = [], dataTMA = [];
-        let html = "";
-        let storage = LWL * Area;
-
-        for(let m=1; m<=10; m++) {
-            storage += (0.38 * 60) - (0.25 * 60); // Inflow 0.38, Outflow 0.25
-            let tma = (storage/Area) + ED;
-            labels.push(m); dataTMA.push(tma);
-            html += `<tr><td>${m}</td><td>0.38</td><td>${tma.toFixed(2)}</td><td>ON</td><td>OFF</td><td>${tma.toFixed(2)}</td></tr>`;
-        }
-        document.querySelector("#pumpTable tbody").innerHTML = html;
-
-        if(pChart) pChart.destroy();
-        pChart = new Chart(document.getElementById('pumpChart'), {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'EL. TMA (m)', data: dataTMA, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' }] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+    function closeApp() {
+        document.getElementById('main-menu').style.display = 'flex';
+        document.getElementById('app-container').style.display = 'none';
+        document.getElementById('app-frame').src = '';
     }
 </script>
 
