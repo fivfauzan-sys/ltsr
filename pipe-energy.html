@@ -35,7 +35,6 @@
         /* SIDEBAR */
         #sidebar { width: 450px; background: var(--white); margin-top: 85px; border-right: 1px solid #cbd5e1; overflow-y: auto; padding: 25px; }
         
-        /* GAYA JUDUL BARU (SESUAI GAMBAR REFERENSI) */
         h3 { 
             font-size: 1.1rem; 
             color: var(--gold-dark); 
@@ -80,14 +79,12 @@
         <div class="main-title">Pipe Energy Calculator</div>
         <div class="sub-title">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
     </div>
-    <div class="credit-tag">AsproXSudinJS</div>
+    <div class="credit-tag">Rentek SDA JS</div>
 </div>
-<div id="top-header">
-    <div class="header-left">
-        <div class="main-title">Pipe Energy Calculator</div>
-        <div class="sub-title">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
-    </div>
-    <div class="credit-tag">Rentek SDA JS</div> </div>
+
+<div id="sidebar">
+    <h3>Parameter Sistem</h3>
+    <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
         <option value="HW">Metode Hazen-Williams (C)</option>
         <option value="DW">Metode Darcy-Weisbach (ε)</option>
     </select>
@@ -219,7 +216,7 @@
         const elD = parseFloat(document.getElementById('el_dasar').value);
         const tA = parseFloat(document.getElementById('t_air').value);
         const elPmp = parseFloat(document.getElementById('el_pmp').value);
-        const g = 9.81; const nu = 1.004e-6; // viskositas air
+        const g = 9.81; const nu = 1.004e-6;
 
         let waterSurface = elD + tA;
         let results = [];
@@ -288,47 +285,27 @@
         const gX = v => margin + (v - minX) * scaleX;
         const gY = v => c.height - margin - (v - minY) * scaleY;
 
-        // LEGENDA
-        ctx.font = "11px Arial"; ctx.textAlign = "left";
-        ctx.fillStyle = "red"; ctx.fillRect(c.width-150, 20, 15, 2); ctx.fillStyle = "black"; ctx.fillText("HGL (Tekanan)", c.width-130, 25);
-        ctx.fillStyle = "blue"; ctx.fillRect(c.width-150, 40, 15, 2); ctx.fillStyle = "black"; ctx.fillText("EGL (Total Energy)", c.width-130, 45);
-        ctx.fillStyle = "#334155"; ctx.fillRect(c.width-150, 60, 15, 6); ctx.fillStyle = "black"; ctx.fillText("Pipa Jalur", c.width-130, 66);
-
-        // RESERVOIR
+        ctx.clearRect(0,0,c.width,c.height);
+        
         ctx.fillStyle = "rgba(14, 165, 233, 0.2)"; ctx.fillRect(gX(-40), gY(elD+tA), 40*scaleX, tA*scaleY);
         ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 2; ctx.strokeRect(gX(-40), gY(elD+tA), 40*scaleX, tA*scaleY);
-        ctx.fillStyle = "#0f172a"; ctx.font = "bold 13px Segoe UI"; ctx.textAlign = "center";
-        ctx.fillText("RESERVOIR", gX(-20), gY(elD+tA) - 15);
         
-        // HGL STARTING
-        ctx.setLineDash([6,4]); ctx.strokeStyle="red"; ctx.beginPath();
-        ctx.moveTo(gX(-40), gY(elD+tA)); ctx.lineTo(gX(0), gY(elD+tA)); 
-        ctx.lineTo(gX(0), gY(res[1].hgl)); ctx.stroke();
-
         res.forEach((r, idx) => {
             if (idx >= 2) {
                 ctx.lineWidth=7; ctx.strokeStyle = "#334155"; ctx.setLineDash([]);
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
                 
-                ctx.fillStyle = "#0f172a"; ctx.font = "bold 12px Segoe UI"; ctx.textAlign = "center";
-                ctx.fillText(`SEGMEN ${idx-1}`, (gX(r.x1)+gX(r.x2))/2, (gY(r.y1)+gY(r.y2))/2 - 20);
-                
                 ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.strokeStyle="red"; 
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl).toFixed(2)); ctx.stroke();
-                ctx.setLineDash([]); ctx.strokeStyle="blue"; 
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl+r.vH)); ctx.lineTo(gX(r.x2), gY(r.hgl+r.vH)); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
             }
         });
 
-        // POMPA ICON & NOTATION
         ctx.beginPath(); ctx.fillStyle = "#0f172a"; ctx.arc(gX(0), gY(res[1].y1), 16, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("P", gX(0), gY(res[1].y1)+5);
-        ctx.fillStyle = "#0f172a"; ctx.font = "bold 13px Segoe UI"; ctx.fillText("POMPA", gX(0), gY(res[1].y1) + 38);
+        ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign="center"; ctx.fillText("P", gX(0), gY(res[1].y1)+5);
     }
 
     window.onload = () => { renderFitting(); renderSegmentsUI(); runSimulation(); };
 </script>
 
 </body>
-
 </html>
