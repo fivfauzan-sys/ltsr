@@ -4,74 +4,104 @@
     <meta charset="UTF-8">
     <title>Pipe Energy Calculator PRO v7.35</title>
     <style>
-        :root { 
-            --navy: #0f172a; --gold: #f59e0b; --gold-dark: #d97706;
-            --white: #ffffff; --bg: #f1f5f9; --success: #10b981; --danger: #ef4444;
-        }
+        <style>
+    :root { 
+        --navy: #0f172a; --gold: #f59e0b; --gold-dark: #d97706;
+        --white: #ffffff; --bg: #f1f5f9; --success: #10b981; --danger: #ef4444;
+    }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
-        /* HEADER */
-        #top-header {
-            position: fixed; top: 0; left: 0; right: 0; height: 80px;
-            background: var(--navy); color: white; display: flex; align-items: center;
-            justify-content: space-between; padding: 0 25px; border-bottom: 5px solid var(--gold); z-index: 1000;
-        }
-        .header-left { display: flex; flex-direction: column; }
-        .main-title { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; }
-        .sub-title { font-size: 0.9rem; color: var(--gold); font-weight: 600; }
-        
-        .credit-tag { 
-            background: rgba(245, 158, 11, 0.15); 
-            border: 1.5px solid var(--gold); 
-            color: var(--gold); 
-            padding: 6px 18px; 
-            border-radius: 10px; 
-            font-size: 0.85rem; 
-            font-weight: 900; 
-            letter-spacing: 0.5px;
-        }
+    /* HEADER */
+    #top-header {
+        position: fixed; top: 0; left: 0; right: 0; height: 80px;
+        background: var(--navy); color: white; display: flex; align-items: center;
+        justify-content: space-between; padding: 0 25px; border-bottom: 5px solid var(--gold); z-index: 1000;
+    }
+    .header-left { display: flex; flex-direction: column; }
+    .main-title { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; }
+    .sub-title { font-size: 0.9rem; color: var(--gold); font-weight: 600; }
+    
+    .credit-tag { 
+        background: rgba(245, 158, 11, 0.15); 
+        border: 1.5px solid var(--gold); 
+        color: var(--gold); 
+        padding: 6px 18px; 
+        border-radius: 10px; 
+        font-size: 0.85rem; 
+        font-weight: 900; 
+        letter-spacing: 0.5px;
+    }
 
-        /* SIDEBAR */
-        #sidebar { width: 450px; background: var(--white); margin-top: 85px; border-right: 1px solid #cbd5e1; overflow-y: auto; padding: 15px; }
-        
-        /* GAYA JUDUL BARU (SESUAI GAMBAR REFERENSI) */
-        h3 { 
-            font-size: 1.1rem; 
-            color: var(--gold-dark); 
-            border-left: 5px solid var(--gold); 
-            padding-left: 12px; 
-            margin: 20px 0 10px 0; 
-            text-transform: uppercase;
-            font-weight: 900;
-            line-height: 1.2;
-        }
-        
-        .card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 10px; border-top: 4px solid var(--navy); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .seg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
-        
-        .badge-l { background: var(--navy); color: var(--gold); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.9rem; border: 1px solid var(--gold); }
-        .badge-c { background: #e2e8f0; color: var(--navy); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; border: 1px solid var(--navy); }
+    /* SIDEBAR & FIX TABRAKAN */
+    #sidebar { 
+        width: 450px; 
+        background: var(--white); 
+        margin-top: 85px; 
+        border-right: 1px solid #cbd5e1; 
+        overflow-y: auto; 
+        padding: 15px; 
+        box-sizing: border-box; /* Mencegah sidebar meluber */
+    }
+    
+    h3 { 
+        font-size: 1.1rem; 
+        color: var(--gold-dark); 
+        border-left: 5px solid var(--gold); 
+        padding-left: 12px; 
+        margin: 20px 0 10px 0; 
+        text-transform: uppercase;
+        font-weight: 900;
+        line-height: 1.2;
+    }
+    
+    .card { 
+        background: white; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 10px; 
+        padding: 12px; 
+        margin-bottom: 10px; 
+        border-top: 4px solid var(--navy); 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+    }
 
-        label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; }
+    .seg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
+    
+    label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
 
-        .fitting-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy); }
-        .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
-        .fitting-table input { width: 45px; padding: 4px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; }
+    /* PERBAIKAN UTAMA: Box-Sizing & Flex-1 */
+    input, select { 
+        width: 100%; 
+        padding: 8px; 
+        border: 1px solid #cbd5e1; 
+        border-radius: 6px; 
+        font-size: 0.9rem; 
+        margin-bottom: 10px; 
+        box-sizing: border-box; /* WAJIB: Agar input tidak bertabrakan saat berdampingan */
+    }
 
-        #main { flex-grow: 1; margin-top: 85px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-        #canvas-wrapper { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); position: relative;}
-        canvas { width: 100%; height: 420px; }
+    /* Kunci agar input berdampingan tetap rapi */
+    div[style*="display:flex"] > div {
+        flex: 1;
+        min-width: 0; /* Mencegah elemen mendorong satu sama lain */
+    }
 
-        table.results { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
-        table.results th { background: var(--navy); color: white; padding: 15px; text-transform: uppercase; font-size: 0.75rem; }
-        table.results td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: center; }
-        .row-special { background: #fffbeb; font-weight: bold; }
+    .fitting-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy); }
+    .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
+    .fitting-table input { width: 50px; padding: 4px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; margin-bottom: 0; }
 
-        .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.2rem; }
-    </style>
+    #main { flex-grow: 1; margin-top: 85px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+    #canvas-wrapper { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); position: relative;}
+    canvas { width: 100%; height: 420px; }
+
+    table.results { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+    table.results th { background: var(--navy); color: white; padding: 15px; text-transform: uppercase; font-size: 0.75rem; }
+    table.results td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: center; }
+    .row-special { background: #fffbeb; font-weight: bold; }
+
+    .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.2rem; }
+</style>
 </head>
 <body>
 
@@ -330,6 +360,7 @@
 </body>
 
 </html>
+
 
 
 
