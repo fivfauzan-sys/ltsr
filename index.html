@@ -3,121 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDA Jaksel - Engineering Control Center</title>
+    <title>SDA Engineering Hub - Jakarta Selatan</title>
     <style>
         :root {
-            --primary: #0f172a; /* Navy Deep */
-            --accent: #f59e0b;  /* Gold */
-            --glow: rgba(245, 158, 11, 0.4);
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary: #0f172a;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background: #e2e8f0;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-color: var(--bg);
             color: var(--primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* WRAPPER DASHBOARD */
-        #dashboard-content {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        #main-header {
+        /* HEADER */
+        header {
             background: var(--primary);
-            color: white;
             padding: 60px 20px;
             text-align: center;
-            position: relative;
             border-bottom: 8px solid var(--accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .header-title {
-            font-size: 2.8rem;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 0px var(--accent);
-        }
-
-        .header-subtitle {
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-top: 10px;
-            letter-spacing: 2px;
+            color: white;
         }
 
         .container {
             max-width: 1200px;
-            margin: -40px auto 50px auto;
+            margin: -50px auto 50px;
             padding: 0 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            z-index: 10;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
         }
 
-        .calc-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 40px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.3);
+        /* CARD STYLE */
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            position: relative;
-            cursor: pointer;
+            align-items: center;
         }
 
-        .calc-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+        .card:hover:not(.locked) {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15);
             border-color: var(--accent);
         }
 
-        .icon-circle {
-            width: 70px; height: 70px;
-            background: var(--primary);
-            border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; margin-bottom: 25px;
-            box-shadow: 0 10px 20px var(--glow);
-            border: 2px solid var(--accent);
+        /* LOGO STYLE - DIBUAT BESAR & TRANSPARAN */
+        .icon-wrapper {
+            width: 180px;
+            height: 180px;
+            background: rgba(15, 23, 42, 0.03); /* Transparansi halus */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px; /* Ukuran icon sangat besar */
+            margin-bottom: 30px;
+            position: relative;
+            transition: 0.4s;
+            border: 2px dashed #cbd5e1;
         }
 
-        .btn-launch {
+        .card:hover .icon-wrapper {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--accent);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* WATERMARK TEXT DI BELAKANG ICON */
+        .icon-wrapper::after {
+            content: "SDA";
+            position: absolute;
+            font-size: 100px;
+            font-weight: 900;
+            color: rgba(15, 23, 42, 0.05);
+            z-index: -1;
+        }
+
+        h2 { font-size: 1.8rem; margin: 10px 0; font-weight: 800; }
+        p { color: #64748b; line-height: 1.6; font-size: 1rem; margin-bottom: 30px; }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            border: none;
             background: var(--primary);
             color: white;
-            padding: 16px;
-            border-radius: 12px;
             font-weight: 800;
-            text-align: center;
             text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
             margin-top: auto;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        .calc-card:hover .btn-launch {
+        .card:hover .btn {
             background: var(--accent);
             color: var(--primary);
         }
 
-        /* --- CODING UNTUK PORTAL APLIKASI & TOMBOL BACK --- */
-        
-        #app-portal {
-            display: none; /* Sembunyi di awal */
+        /* LOCKED STATE */
+        .locked {
+            filter: grayscale(1);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .badge-locked {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        /* PORTAL & BACK BUTTON */
+        #portal {
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100vh;
@@ -125,118 +142,70 @@
             z-index: 9999;
         }
 
-        #app-frame {
-            width: 100%; height: 100%;
-            border: none;
-        }
-
-        .btn-back-floating {
+        .btn-back {
             position: fixed;
-            bottom: 30px;
-            left: 30px;
+            bottom: 30px; left: 30px;
             z-index: 10000;
             background: var(--accent);
             color: var(--primary);
-            border: none;
-            padding: 15px 25px;
+            padding: 15px 30px;
             border-radius: 50px;
-            font-weight: 900;
+            font-weight: 800;
+            border: none;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        .btn-back-floating:hover {
-            transform: scale(1.1);
-            background: var(--primary);
-            color: white;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 40px;
-            text-align: center;
-            color: #64748b;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-<div id="dashboard-content">
-    <header id="main-header">
-        <div class="header-content">
-            <div class="header-title">ONLINE DASHBOARD</div>
-            <div class="header-subtitle">Seksi Perencanaan Suku Dinas Sumber Daya Air Jakarta Selatan</div>
-        </div>
-    </header>
+<header>
+    <h1 style="margin: 0; font-size: 2.5rem;">SDA CALCULATOR ONLINE</h1>
+    <p style="color: var(--accent); margin: 10px 0 0 0; font-weight: bold; letter-spacing: 3px;">RENTEK SDA JAKARTA SELATAN</p>
+</header>
 
-    <div class="container">
-        <div class="calc-card" onclick="bukaHalaman('pump-storage.html')">
-            <div class="icon-circle">💧</div>
-            <h2>Pump Storage Simulator</h2>
-            <p>Simulasi siklus operasional pompa dan monitoring TMA kolam olakan.</p>
-            <div class="btn-launch">Buka Simulator <span>→</span></div>
-        </div>
-
-        <div class="calc-card" onclick="bukaHalaman('pipe-energy.html')">
-            <div class="icon-circle">⚙️</div>
-            <h2>Pipe Energy Calculator</h2>
-            <p>Analisis distribusi tekanan, head loss, dan verifikasi spesifikasi material pipa.</p>
-            <div class="btn-launch">Buka Calculator <span>→</span></div>
-        </div>
-
-        <div class="calc-card locked-card">
-            <span class="status-badge badge-new" style="position: absolute; top: 20px; right: 20px; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">Coming Soon</span>
-            <div class="icon-circle">🌍</div>
-            <h2>Spatial Area Analyzer</h2>
-            <p>Fitur analisis spasial otomatis sedang dalam tahap sinkronisasi data.</p>
-            <button class="btn-launch btn-locked" onclick="alert('Fitur ini masih dikunci.')">Belum Tersedia</button>
-        </div>
+<div class="container">
+    <div class="card" onclick="bukaModul('pump-storage.html')">
+        <div class="icon-wrapper">💧</div>
+        <h2>Pump Storage Simulator</h2>
+        <p>Analisis siklus operasional pompa dan monitoring TMA kolam olakan secara presisi.</p>
+        <button class="btn">Buka Simulator →</button>
     </div>
 
-    <footer>
-        <strong>For Latsar 2026</strong> • Fauzan Afif<br>
-        Seksi Perencanaan - Sudin Sumber Daya Air Jakarta Selatan
-    </footer>
+    <div class="card" onclick="bukaModul('pipe-energy.html')">
+        <div class="icon-wrapper">⚙️</div>
+        <h2>Pipe Energy Calculator</h2>
+        <p>Penghitungan head loss, distribusi tekanan, dan verifikasi spesifikasi material pipa.</p>
+        <button class="btn">Buka Calculator →</button>
+    </div>
+
+    <div class="card locked" onclick="alert('Modul Spatial Area masih dalam tahap sinkronisasi data.')">
+        <span class="badge-locked">🔒 LOCKED</span>
+        <div class="icon-wrapper">🌍</div>
+        <h2>Spatial Area Analyzer</h2>
+        <p>Analisis Catchment Area dan deteksi stasiun hujan terdekat secara otomatis.</p>
+        <button class="btn" style="background: #94a3b8;">Belum Tersedia</button>
+    </div>
 </div>
 
-<div id="app-portal">
-    <button class="btn-back-floating" onclick="kembaliKeMenu()">
-        ⬅ KEMBALI KE DASHBOARD
-    </button>
+<div id="portal">
+    <button class="btn-back" onclick="tutupModul()">⬅ KEMBALI KE MENU</button>
     <iframe id="app-frame" src=""></iframe>
 </div>
 
 <script>
-    function bukaHalaman(url) {
-        // Munculkan portal aplikasi
-        document.getElementById('app-portal').style.display = 'block';
-        // Sembunyikan dashboard agar tidak mengganggu scroll
-        document.getElementById('dashboard-content').style.display = 'none';
-        // Masukkan link ke dalam iframe
-        document.getElementById('app-frame').src = url;
+    function bukaModul(file) {
+        document.getElementById('portal').style.display = 'block';
+        document.getElementById('app-frame').src = file;
     }
 
-    function kembaliKeMenu() {
-        // Sembunyikan portal aplikasi
-        document.getElementById('app-portal').style.display = 'none';
-        // Munculkan kembali dashboard
-        document.getElementById('dashboard-content').style.display = 'flex';
-        // Kosongkan iframe agar simulasi berhenti (hemat RAM)
+    function tutupModul() {
+        document.getElementById('portal').style.display = 'none';
         document.getElementById('app-frame').src = '';
     }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
