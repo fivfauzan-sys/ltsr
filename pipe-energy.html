@@ -435,26 +435,38 @@
             ctx.fillText(y.toFixed(1) + "m", marginX - 8, gY(y) + 3);
         }
 
-        // 🎨 2. LEGENDA FLEXIBLE ADAPTIF SCREEN
-        ctx.font = isMobile ? "bold 10px Segoe UI" : "11px Arial"; 
+        // 🎨 2. LEGENDA FLEXIBLE ADAPTIF SCREEN (SUDAH DIPERBAIKI - ANTI TABRAKAN)
+        ctx.font = isMobile ? "bold 10px 'Segoe UI', sans-serif" : "11px 'Segoe UI', sans-serif"; 
         ctx.textAlign = "left";
         
-        const legX = isMobile ? marginX : width - 160;
-        const legStep = isMobile ? (width - marginX*2) / 3 : 20;
-        
-        // Legend: HGL
-        ctx.fillStyle = "red"; ctx.fillRect(legX, isMobile ? 15 : 20, 15, 2);
-        ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", legX + 20, isMobile ? 18 : 25);
-        
-        // Legend: EGL
-        const legX2 = isMobile ? legX + legStep : legX;
-        ctx.fillStyle = "blue"; ctx.fillRect(legX2, isMobile ? 15 : 40, 15, 2);
-        ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", legX2 + 20, isMobile ? 18 : 45);
-        
-        // Legend: Pipa
-        const legX3 = isMobile ? legX + (legStep * 2) : legX;
-        ctx.fillStyle = "#334155"; ctx.fillRect(legX3, isMobile ? 13 : 60, 15, 5);
-        ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", legX3 + 20, isMobile ? 18 : 66);
+        if (isMobile) {
+            let startX = marginX;
+            
+            // Legend 1: HGL
+            ctx.fillStyle = "red"; ctx.fillRect(startX, 15, 15, 2);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", startX + 20, 18);
+            
+            // Legend 2: EGL
+            let startX2 = startX + 110;
+            ctx.fillStyle = "blue"; ctx.fillRect(startX2, 15, 15, 2);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", startX2 + 20, 18);
+            
+            // Legend 3: Pipa
+            let startX3 = startX2 + 100;
+            ctx.fillStyle = "#334155"; ctx.fillRect(startX3, 13, 15, 5);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", startX3 + 20, 18);
+        } else {
+            let startX = width - 160;
+            
+            ctx.fillStyle = "red"; ctx.fillRect(startX, 20, 15, 2);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", startX + 20, 25);
+            
+            ctx.fillStyle = "blue"; ctx.fillRect(startX, 40, 15, 2);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", startX + 20, 45);
+            
+            ctx.fillStyle = "#334155"; ctx.fillRect(startX, 60, 15, 5);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", startX + 20, 66);
+        }
 
         // 🎨 3. VISUALISASI STRUKTUR RESERVOIR
         ctx.fillStyle = "rgba(14, 165, 233, 0.15)"; 
