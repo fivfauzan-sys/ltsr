@@ -42,16 +42,6 @@
         p { margin-bottom: 20px; text-align: justify; }
         ul, ol { padding-left: 20px; margin-bottom: 25px; }
         li { margin-bottom: 10px; }
-        
-        .alert-box {
-            background: #fffbeb;
-            border: 1px solid #fef3c7;
-            border-left: 5px solid var(--accent);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 25px 0;
-        }
-        .alert-box strong { color: #b45309; }
 
         .table-style {
             width: 100%;
@@ -77,68 +67,92 @@
             font-size: 0.9rem;
             color: #0f172a;
         }
+        .formula-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
 
 <div class="container-manual">
     <div class="header-manual">
-        <h1>📖 BUKU PANDUAN TEKNIS (MANUAL BOOK)</h1>
+        <h1>📖 BUKU PANDUAN & FLOW PENGGUNAAN</h1>
         <div class="subtitle">SDA Engineering Hub — Suku Dinas Sumber Daya Air Jakarta Selatan</div>
     </div>
 
-    <p>Buku panduan ini disusun sebagai acuan resmi operasional aplikasi internal berbasis web <strong>SDA Engineering Hub</strong>. Aplikasi ini dirancang untuk mempercepat proses analisis hidrolika praktis dan simulasi sistem drainase di lingkungan kerja Seksi Perencanaan Jakarta Selatan.</p>
-
-    <!-- BAB 1 -->
-    <h2>1. Arsitektur Keamanan & Sistem Akses Portal</h2>
-    <p>Aplikasi dilengkapi dengan lapisan enkripsi visual (blur overlay) untuk memastikan data perencanaan internal tidak diakses oleh pihak luar secara bebas. Pengguna diwajibkan melewati tahap otentikasi lokal.</p>
+    <h2>1. Flow Penggunaan Aplikasi (User Journey)</h2>
+    <p>Berikut adalah urutan langkah standar operasional untuk mengakses dan menavigasi fitur-fitur di dalam portal utama:</p>
     
-    <h3>Alur Kerja (Flow) Log-In:</h3>
     <ol>
-        <li>Saat tautan dashboard dibuka, sistem memicu elemen overlay <span class="code-inline">#login-overlay</span> yang mengaburkan seluruh konten utama di belakangnya.</li>
-        <li>Pengguna diminta memasukkan 4-Digit Kode Akses Verifikasi pada kolom yang tersedia.</li>
-        <li>Sistem mengecek input secara *real-time* berbasis JavaScript. Jika kode benar (<span class="code-inline">9999</span>), efek blur akan dihilangkan, kontrol klik diaktifkan, dan animasi transisi halaman dimulai.</li>
-        <li>Jika input salah, sistem menampilkan peringatan eror merah <em>"EITSSS, KODENYA SALAH!!"</em> dan mengosongkan kembali kolom inputan.</li>
+        <li><strong>Mengakses Tautan Utama:</strong> Buka alamat URL dashboard resmi melalui peramban (browser) pada perangkat mobile atau PC.</li>
+        <li><strong>Tahap Gerbang Keamanan:</strong> Layar utama akan menampilkan antarmuka terkunci dengan efek kabur (*blur overlay*). Pengguna diwajibkan memasukkan <strong>Kode Verifikasi Internal</strong> yang sah pada kolom sandi.</li>
+        <li><strong>Validasi Sistem:</strong> Tekan tombol <strong>"Masuk Dashboard"</strong> atau tombol *Enter*. Jika kode sesuai, enkripsi visual akan terbuka secara otomatis. Jika salah, sistem akan menolak akses dan memunculkan indikator eror.</li>
+        <li><strong>Pemilihan Modul Analisis:</strong> Setelah masuk ke dashboard utama, pengguna dapat memilih salah satu perangkat teknik (*engineering tools*) yang dibutuhkan:
+            <ul>
+                <li>Klik <strong>"Buka Simulator"</strong> untuk masuk ke modul Pump Storage.</li>
+                <li>Klik <strong>"Buka Calculator"</strong> untuk masuk ke modul Pipe Energy.</li>
+            </ul>
+        </li>
+        <li><strong>Navigasi Kembali:</strong> Saat berada di dalam modul analisis, pengguna dapat berpindah atau kembali ke menu utama kapan saja dengan menekan tombol melayang <strong>"⬅ BACK TO DASHBOARD"</strong> di pojok kiri bawah layar tanpa harus melakukan proses log-in ulang.</li>
     </ol>
 
-    <div class="alert-box">
-        <strong>⚠️ CATATAN KEAMANAN:</strong> Kode akses bawaan diatur pada kombinasi <strong>9999</strong>. Untuk keperluan perubahan kode di masa mendatang, modifikasi variabel <span class="code-inline">KODE_RAHASIA</span> pada skrip baris akhir di file master <span class="code-inline">index.html</span>.
-    </div>
-
-    <!-- BAB 2 -->
-    <h2>2. Modul 1: Pump Storage Simulator</h2>
-    <p>Modul simulator ini difungsikan untuk memprediksi serta menganalisis stabilitas kapasitas tampungan air pada kolam olakan (wet well) stasiun pompa banjir pompa pengendali banjir.</p>
+    <h2>2. Buku Manual Operasional & Parameter Teknis</h2>
+    <p>Bagian ini menjelaskan instruksi penginputan data parameter pada masing-masing modul beserta landasan rumus hidrolika yang digunakan oleh sistem dalam memproses kalkulasi.</p>
     
-    <h3>A. Parameter Input Penting:</h3>
+    <h3>A. Modul: Pump Storage Simulator</h3>
+    <p>Modul ini dirancang untuk mensimulasikan fluktuasi air pada kolam olakan stasiun pompa guna mencegah limpasan banjir.</p>
+    
+    <h4>Data yang Harus Diinput Pengguna:</h4>
     <ul>
-        <li><strong>Tinggi Muka Air (TMA) Awal (m):</strong> Level air aktual di dalam kolam olakan sebelum pompa dinyalakan.</li>
-        <li><strong>Debit Banjir Masuk / Inflow (m³/s):</strong> Estimasi debit air yang masuk dari saluran makro/mikro menuju kolam olakan berdasarkan intensitas curah hujan rencana.</li>
-        <li><strong>Kapasitas Pompa Eksisting (m³/s atau saringan liter/detik):</strong> Total debit buang dari kombinasi unit pompa yang diaktifkan di lokasi penanganan.</li>
+        <li><strong>Tinggi Muka Air (TMA) Awal (meter):</strong> Ketinggian muka air aktual eksisting di dalam kolam olakan sebelum unit pompa dioperasikan.</li>
+        <li><strong>Debit Banjir Masuk / Inflow (m³/detik):</strong> Volume air per detik yang mengalir masuk ke kolam olakan dari saluran drainase utama wilayah.</li>
+        <li><strong>Kapasitas Pompa / Outflow (m³/detik):</strong> Total daya sedot/buang dari kombinasi unit-unit pompa pengendali banjir yang sedang aktif beroperasi.</li>
     </ul>
 
-    <h3>B. Alur Simulasi & Output:</h3>
-    <p>Simulator ini menghitung kesetimbangan massa air menggunakan persamaan kontinuitas sederhana:</p>
-    <p style="font-family: monospace; text-align: center; background: #f1f5f9; padding: 10px; border-radius: 8px;">
-        ΔVolume = (Inflow - Outflow) × Waktu
-    </p>
-    <p>Hasil akhir analisis akan memunculkan rekomendasi berupa status keamanan kolam olakan, estimasi waktu kritis sebelum limpas (overtopping), serta grafik tren kenaikan/penurunan TMA.</p>
+    <h4>Rumus Hidrolika yang Digunakan:</h4>
+    <p>Simulasi perubahan volume tampungan kolam dihitung berdasarkan hukum kekekalan massa (Persamaan Kontinuitas):</p>
+    <div class="formula-box">
+        ΔV = (Q_inflow - Q_outflow) × Δt
+    </div>
+    <p>Dimana <span class="code-inline">ΔV</span> adalah perubahan volume tampungan kolam, dan <span class="code-inline">Δt</span> adalah interval waktu operasional pompa. Sistem akan mengonversi hasil perubahan volume ini menjadi representasi visual fluktuasi TMA.</p>
 
-    <!-- BAB 3 -->
-    <h2>3. Modul 2: Pipe Energy Calculator</h2>
-    <p>Modul kalkulator perpipaan ini digunakan oleh tim perencanaan untuk menghitung parameter kehilangan energi (head loss) pada sistem pipa tekan (discharge pipe) pompa air.</p>
+    <h3>B. Modul: Pipe Energy Calculator</h3>
+    <p>Modul ini digunakan untuk menganalisis kehilangan tinggi tekan (*head loss*) akibat gesekan pada pipa penyalur cairan (*discharge pipe*).</p>
     
-    <h3>A. Metode Perhitungan:</h3>
-    <p>Kalkulator ini mengadopsi 2 metode pendekatan hidrolika utama yang umum digunakan dalam dunia teknik sipil keairan:</p>
-    <ol>
-        <li><strong>Metode Hazen-Williams:</strong> Sangat ideal untuk perhitungan praktis pada jaringan pipa air bersih atau air banjir dengan temperatur normal. Menggunakan koefisien kekasaran <span class="code-inline">C</span>.</li>
-        <li><strong>Metode Darcy-Weisbach:</strong> Pendekatan yang jauh lebih akurat secara teoritis karena mempertimbangkan nilai viskositas kinematik fluida dan angka Reynold untuk menentukan faktor gesekan pipa (<span class="code-inline">f</span>).</li>
-    </ol>
+    <h4>Data yang Harus Diinput Pengguna:</h4>
+    <ul>
+        <li><strong>Diameter Dalam Pipa (mm):</strong> Ukuran penampang bersih bagian dalam pipa yang dilewati air.</li>
+        <li><strong>Panjang Total Pipa (meter):</strong> Bentang panjang jalur pipa dari titik hisap hingga titik buang akhir.</li>
+        <li><strong>Debit Aliran Cairan (Liter/detik atau m³/detik):</strong> Besaran laju volume aliran rencana yang dipompa melalui jaringan tersebut.</li>
+        <li><strong>Jenis Material Pipa:</strong> Pilihan material untuk menentukan variabel tingkat kekasaran dinding dalam pipa.</li>
+    </ul>
 
-    <h3>B. Panduan Nilai Koefisien Kekasaran Material Pipa:</h3>
+    <h4>Dua Pilihan Metode Rumus yang Digunakan:</h4>
+    
+    <p><strong>1. Metode Hazen-Williams</strong> (Umum digunakan untuk analisis praktis pipa tekan air bersih/banjir):</p>
+    <div class="formula-box">
+        h_f = 10.67 × L × Q^1.852 / (C^1.852 × D^4.87)
+    </div>
+    <p>Dimana <span class="code-inline">h_f</span> adalah kehilangan energi akibat gesekan (meter), <span class="code-inline">L</span> panjang pipa (m), <span class="code-inline">Q</span> debit (m³/s), <span class="code-inline">D</span> diameter pipa (m), dan <span class="code-inline">C</span> adalah Koefisien Kekasaran Hazen-Williams.</p>
+
+    <p><strong>2. Metode Darcy-Weisbach</strong> (Pendekatan teoritis dengan tingkat akurasi tinggi):</p>
+    <div class="formula-box">
+        h_f = f × (L / D) × (v² / 2g)
+    </div>
+    <p>Dimana <span class="code-inline">f</span> merupakan faktor gesekan pipa (yang diturunkan dari Bilangan Reynolds dan kekasaran absolut material), <span class="code-inline">v</span> kecepatan aliran cairan di dalam pipa (m/s), dan <span class="code-inline">g</span> gaya gravitasi bumi (9.81 m/s²).</p>
+
+    <h4>Referensi Koefisien Kekasaran Material:</h4>
     <table class="table-style">
         <thead>
             <tr>
-                <th>Jenis Material Pipa</th>
+                <th>Material Pipa Eksisting</th>
                 <th>Koefisien Hazen-Williams (C)</th>
                 <th>Kekasaran Absolut Darcy (ε - mm)</th>
             </tr>
@@ -155,7 +169,7 @@
                 <td>0.25</td>
             </tr>
             <tr>
-                <td>Welded Steel (Baja)</td>
+                <td>Welded Steel (Baja Las)</td>
                 <td>120</td>
                 <td>0.045</td>
             </tr>
@@ -166,30 +180,6 @@
             </tr>
         </tbody>
     </table>
-
-    <h3>C. Langkah Operasional Kalkulator:</h3>
-    <ol>
-        <li>Buka modul melalui tombol <strong>"Buka Calculator →"</strong> pada dasbor utama.</li>
-        <li>Pilih opsi metode perhitungan yang ingin digunakan pada menu drop-down.</li>
-        <li>Input geometri pipa meliputi: <strong>Diameter Dalam (mm)</strong> dan <strong>Panjang Total Jalur Pipa (m)</strong>.</li>
-        <li>Masukkan nilai <strong>Debit Aliran Rencana (Liters/second atau m³/s)</strong>.</li>
-        <li>Klik <strong>"Hitung Head Loss"</strong>. Sistem akan langsung mengeluarkan total kehilangan tinggi tekan utama (*major losses*).</li>
-    </ol>
-
-    <!-- BAB 4 -->
-    <h2>4. Prosedur Navigasi & Pemeliharaan Sistem</h2>
-    <h3>A. Navigasi Portal Efisien:</h3>
-    <p>Sistem menggunakan elemen <span class="code-inline">&lt;iframe&gt;</span> dinamis bernama <span class="code-inline">#portal</span>. Ketika tombol salah satu modul diklik, halaman utama tidak melakukan *reload* penuh, melainkan hanya memuat file anak di dalam portal overlay. Gunakan tombol melayang **"⬅ BACK TO DASHBOARD"** di pojok kiri bawah untuk keluar dari modul dengan aman tanpa meriset status login.</p>
-
-    <h3>B. Struktur Manajemen File di GitHub:</h3>
-    <p>Untuk memastikan aplikasi web tetap berjalan normal di GitHub Pages, susunan direktori repositori harus dijaga seperti berikut:</p>
-    <ul style="font-family: monospace; list-style-type: none;">
-        <li>📂 nama-repositori-kamu/</li>
-        <li>├── 📄 index.html <span style="color: #64748b;">(Dashboard Utama & Sistem Login)</span></li>
-        <li>├── 📄 pipe-energy.html <span style="color: #64748b;">(Modul Kalkulator)</span></li>
-        <li>├── 📄 pump-storage.html <span style="color: #64748b;">(Modul Simulator Pompa)</span></li>
-        <li>└── 📄 manual-instruction.html <span style="color: #64748b;">(Halaman Manual Book Ini)</span></li>
-    </ul>
 </div>
 
 </body>
