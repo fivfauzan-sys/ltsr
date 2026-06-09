@@ -70,6 +70,9 @@
         .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy-dark); }
         .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
         .fitting-table input { width: 55px; padding: 6px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; margin-bottom: 0; }
+        
+        /* Kelas tambahan untuk input yang di-lock (readonly) */
+        .fitting-table input[readonly] { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
 
         #canvas-wrapper { 
             background: #060b14; border-radius: 14px; border: 2px solid #1e293b; 
@@ -218,9 +221,10 @@
         let totalK = 0;
         document.getElementById('fitting-body').innerHTML = fittingData.map((f, i) => {
             totalK += f.k * f.qty;
+            // Menambahkan atribut readonly pada input nilai K agar terkunci total
             return `<tr><td>${f.name}</td>
-                <td><input type="number" step="0.01" value="${f.k}" onchange="fittingData[${i}].k=parseFloat(this.value); runSimulation();"></td>
-                <td><input type="number" value="${f.qty}" onchange="fittingData[${i}].qty=parseInt(this.value); runSimulation();"></td></tr>`;
+                <td><input type="number" step="0.01" value="${f.k}" readonly></td>
+                <td><input type="number" value="${f.qty}" onchange="fittingData[${i}].qty=parseInt(this.value) || 0; runSimulation();"></td></tr>`;
         }).join('');
         document.getElementById('total-k-val').innerText = totalK.toFixed(2);
         return totalK;
@@ -275,9 +279,9 @@
         const totalK = renderFitting();
         const Q = parseFloat(document.getElementById('debit').value) || 0.0001;
         const hP = parseFloat(document.getElementById('head_pmp').value) || 0;
-        const elD = parseFloat(document.getElementById('el_dasar').value);
-        const tA = parseFloat(document.getElementById('t_air').value);
-        const elPmp = parseFloat(document.getElementById('el_pmp').value);
+        const elD = parseFloat(document.getElementById('el_dasar').value) || 0;
+        const tA = parseFloat(document.getElementById('t_air').value) || 0;
+        const elPmp = parseFloat(document.getElementById('el_pmp').value) || 0;
         const g = 9.81; const nu = 1.004e-6;
 
         let waterSurface = elD + tA;
@@ -372,7 +376,7 @@
         if (animationOffset > 40) animationOffset = 0;
         
         if (cachedResults.length > 0) {
-            drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value), parseFloat(document.getElementById('t_air').value));
+            drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value) || 0, parseFloat(document.getElementById('t_air').value) || 0);
         }
         requestAnimationFrame(animationLoop);
     }
