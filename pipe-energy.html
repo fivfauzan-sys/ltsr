@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipe Energy Calculator PRO v7.35</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root { 
             --navy-dark: #0b132b; --navy-light: #1c2541; --gold: #f59e0b; --gold-dark: #d97706;
@@ -69,9 +72,19 @@
         .fitting-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy-dark); }
         .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
-        .fitting-table input { width: 75px; padding: 4px 8px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; margin-bottom: 0; }
         
-        /* Kelas tambahan untuk input yang di-lock (readonly) */
+        /* Modifikasi ukuran kotak agar angka desimal K tidak terpotong */
+        .fitting-table input { 
+            width: 75px; 
+            padding: 4px 8px; 
+            text-align: center; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            margin-bottom: 0; 
+            box-sizing: border-box;
+        }
+        
         .fitting-table input[readonly] { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
 
         #canvas-wrapper { 
@@ -98,6 +111,11 @@
         .status-container { display: flex; gap: 15px; width: 100%; }
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
+        /* Aturan pembatas halaman otomatis untuk penataan dokumen PDF */
+        .pdf-page-break {
+            page-break-before: always;
+        }
+
         @media (max-width: 1024px) {
             body { overflow-y: auto; height: auto; }
             .app-container { flex-direction: column; }
@@ -110,74 +128,83 @@
 </head>
 <body>
 
-<div id="top-header">
-    <div class="header-left">
-        <div class="main-title">Pipe Energy Calculator</div>
-        <div class="sub-title">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
+<div id="area-laporan" style="background: var(--bg); display: flex; flex-direction: column; min-height: 100vh;">
+
+    <div id="top-header">
+        <div class="header-left">
+            <div class="main-title">Pipe Energy Calculator</div>
+            <div class="sub-title">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
+        </div>
+        <div class="credit-tag">Rentek_SDA_JS</div>
     </div>
-    <div class="credit-tag">Rentek_SDA_JS</div>
-</div>
 
-<div class="app-container">
-    <div id="sidebar">
-        <h3>Parameter Sistem</h3>
-        <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
-            <option value="HW">Metode Hazen-Williams (C)</option>
-            <option value="DW">Metode Darcy-Weisbach (ε)</option>
-        </select>
+    <div class="app-container">
+        <div id="sidebar">
+            <h3>Parameter Sistem</h3>
+            <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
+                <option value="HW">Metode Hazen-Williams (C)</option>
+                <option value="DW">Metode Darcy-Weisbach (ε)</option>
+            </select>
 
-        <div class="card">
-            <div style="display:flex; gap:10px">
-                <div style="flex:1"><label>El. Dasar Res (m)</label><input type="number" id="el_dasar" value="28.088" onchange="runSimulation()"></div>
-                <div style="flex:1"><label>El. As Pompa (m)</label><input type="number" id="el_pmp" value="29.300" onchange="runSimulation()"></div>
+            <div class="card">
+                <div style="display:flex; gap:10px">
+                    <div style="flex:1"><label>El. Dasar Res (m)</label><input type="number" id="el_dasar" value="28.088" onchange="runSimulation()"></div>
+                    <div style="flex:1"><label>El. As Pompa (m)</label><input type="number" id="el_pmp" value="29.300" onchange="runSimulation()"></div>
+                </div>
+                <div style="display:flex; gap:10px">
+                    <div style="flex:1"><label>Tinggi Air (m)</label><input type="number" id="t_air" value="1.442" onchange="runSimulation()"></div>
+                    <div style="flex:1"><label>Debit Aliran (m³/s)</label><input type="number" id="debit" value="0.25" step="0.01" onchange="runSimulation()"></div>
+                </div>
+                <label>Head Pompa (m)</label><input type="number" id="head_pmp" value="20" onchange="runSimulation()">
             </div>
-            <div style="display:flex; gap:10px">
-                <div style="flex:1"><label>Tinggi Air (m)</label><input type="number" id="t_air" value="1.442" onchange="runSimulation()"></div>
-                <div style="flex:1"><label>Debit Aliran (m³/s)</label><input type="number" id="debit" value="0.25" step="0.01" onchange="runSimulation()"></div>
+
+            <h3>Konfigurasi Jaringan Pipa</h3>
+            <div id="segments-list"></div>
+            
+            <button id="btn-add-seg" onclick="addSegment()" style="width:100%; background:none; border: 2px dashed var(--gold); color: var(--gold-dark); padding: 12px; cursor: pointer; border-radius: 8px; font-weight: 800; margin-bottom: 25px;">+ TAMBAH SEGMEN PIPA</button>
+
+            <h3>Aksesoris & Fitting (ΣK)</h3>
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="fitting-table">
+                        <thead><tr><th>Aksesoris</th><th>K</th><th>Jumlah</th></tr></thead>
+                        <tbody id="fitting-body"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy-dark);">
+                    <span>TOTAL ΣK:</span><span id="total-k-val">0.00</span>
+                </div>
             </div>
-            <label>Head Pompa (m)</label><input type="number" id="head_pmp" value="20" onchange="runSimulation()">
+            
+            <button id="btn-calc" onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Hitung Energi</button>
+            
+            <button id="btn-pdf" onclick="downloadLaporanPDF()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
         </div>
 
-        <h3>Konfigurasi Jaringan Pipa</h3>
-        <div id="segments-list"></div>
-        <button onclick="addSegment()" style="width:100%; background:none; border: 2px dashed var(--gold); color: var(--gold-dark); padding: 12px; cursor: pointer; border-radius: 8px; font-weight: 800; margin-bottom: 25px;">+ TAMBAH SEGMEN PIPA</button>
+        <div id="main">
+            <div id="canvas-wrapper">
+                <div id="chart-tooltip"></div>
+                <canvas id="pCanvas"></canvas>
+            </div>
 
-        <h3>Aksesoris & Fitting (ΣK)</h3>
-        <div class="card">
-            <div class="table-responsive">
-                <table class="fitting-table">
-                    <thead><tr><th>Aksesoris</th><th>K</th><th>Jumlah</th></tr></thead>
-                    <tbody id="fitting-body"></tbody>
+            <div class="pdf-page-break"></div>
+
+            <div class="table-responsive" style="margin-top: 15px;">
+                <table class="results">
+                    <thead>
+                        <tr>
+                            <th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th>
+                            <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy-dark)">Head Sisa (m)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
                 </table>
             </div>
-            <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy-dark);">
-                <span>TOTAL ΣK:</span><span id="total-k-val">0.00</span>
+
+            <div class="status-container">
+                <div id="status-kecepatan" class="status-box">STATUS KECEPATAN: -</div>
+                <div id="status-head" class="status-box">STATUS HEAD SISA: -</div>
             </div>
-        </div>
-        <button onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:40px;">Hitung Energi</button>
-    </div>
-
-    <div id="main">
-        <div id="canvas-wrapper">
-            <div id="chart-tooltip"></div>
-            <canvas id="pCanvas"></canvas>
-        </div>
-
-        <div class="table-responsive">
-            <table class="results">
-                <thead>
-                    <tr>
-                        <th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th>
-                        <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy-dark)">Head Sisa (m)</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
-        </div>
-
-        <div class="status-container">
-            <div id="status-kecepatan" class="status-box">STATUS KECEPATAN: -</div>
-            <div id="status-head" class="status-box">STATUS HEAD SISA: -</div>
         </div>
     </div>
 </div>
@@ -216,12 +243,12 @@
     let waveOffset = 0;
     let cachedResults = [];
     let drawMetrics = { gX: null, gY: null, nodes: [] };
+    let isPrintingPdf = false; // Flag untuk mendeteksi mode cetak PDF
 
     function renderFitting() {
         let totalK = 0;
         document.getElementById('fitting-body').innerHTML = fittingData.map((f, i) => {
             totalK += f.k * f.qty;
-            // Menambahkan atribut readonly pada input nilai K agar terkunci total
             return `<tr><td>${f.name}</td>
                 <td><input type="number" step="0.01" value="${f.k}" readonly></td>
                 <td><input type="number" value="${f.qty}" onchange="fittingData[${i}].qty=parseInt(this.value) || 0; runSimulation();"></td></tr>`;
@@ -240,12 +267,13 @@
             let mat = materialsData[s.matIdx];
             let coefVal = (method === "HW") ? `C=${mat.c}` : `ε=${mat.eps}`;
             
+            // Tombol hapus diberi class 'btn-del-action' agar bisa disembunyikan saat cetak
             return `<div class="card">
                 <div class="seg-header">
                     <span class="badge-l">Panjang: ${L} m</span>
                     <div style="display:flex; gap:8px; align-items:center;">
                         <span class="badge-c">${coefVal}</span>
-                        <button class="btn-delete" onclick="removeSegment(${i})">HAPUS</button>
+                        <button class="btn-delete btn-del-action" onclick="removeSegment(${i})">HAPUS</button>
                     </div>
                 </div>
                 <div style="display:flex; gap:10px">
@@ -371,9 +399,12 @@
     canvasEl.addEventListener('mouseleave', () => { tooltipEl.style.opacity = '0'; });
 
     function animationLoop() {
-        animationOffset += 0.5;
-        waveOffset += 0.08;
-        if (animationOffset > 40) animationOffset = 0;
+        // Hentikan gerak air sesaat jika sedang proses render PDF agar snapshot stabil
+        if (!isPrintingPdf) {
+            animationOffset += 0.5;
+            waveOffset += 0.08;
+            if (animationOffset > 40) animationOffset = 0;
+        }
         
         if (cachedResults.length > 0) {
             drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value) || 0, parseFloat(document.getElementById('t_air').value) || 0);
@@ -385,6 +416,8 @@
         const c = canvasEl; const ctx = c.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
         const rect = c.getBoundingClientRect();
+        
+        // Atur dimensi canvas yang konsisten saat cetak PDF vs tampilan layar umum
         c.width = rect.width * dpr; c.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
         
@@ -490,15 +523,17 @@
                 ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
 
-                // Animasi Partikel Aliran Air
-                ctx.save();
-                ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
-                ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
-                ctx.restore();
+                // Animasi Partikel Aliran Air (Disembunyikan saat cetak PDF agar garis putih tidak putus-putus berantakan)
+                if (!isPrintingPdf) {
+                    ctx.save();
+                    ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
+                    ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
+                    ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+                    ctx.restore();
+                }
 
                 // Line Glow Neon (HGL & EGL)
-                ctx.save(); ctx.shadowBlur = 10;
+                ctx.save(); ctx.shadowBlur = isPrintingPdf ? 0 : 10; // Matikan shadow blur neon saat cetak agar PDF enteng
                 ctx.shadowColor = "#ef4444"; ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
                 
@@ -525,14 +560,16 @@
         let pumpY = gY(res[1].y1);
         drawMetrics.nodes.push({ cx: pumpX, cy: pumpY, type: 'pump', data: res[1] });
 
-        let pulseRadius = pRad + Math.abs(Math.sin(waveOffset * 1.5) * 4);
-        ctx.save();
-        ctx.strokeStyle = "rgba(245, 158, 11, 0.35)"; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(pumpX, pumpY, pulseRadius, 0, Math.PI*2); ctx.stroke();
-        ctx.restore();
+        if (!isPrintingPdf) {
+            let pulseRadius = pRad + Math.abs(Math.sin(waveOffset * 1.5) * 4);
+            ctx.save();
+            ctx.strokeStyle = "rgba(245, 158, 11, 0.35)"; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(pumpX, pumpY, pulseRadius, 0, Math.PI*2); ctx.stroke();
+            ctx.restore();
+        }
 
         ctx.save();
-        ctx.shadowBlur = 12; ctx.shadowColor = "#f59e0b";
+        if (!isPrintingPdf) { ctx.shadowBlur = 12; ctx.shadowColor = "#f59e0b"; }
         ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad, 0, Math.PI*2); ctx.fill();
         ctx.restore();
 
@@ -542,6 +579,62 @@
 
         ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px sans-serif";
         ctx.fillText("POMPA", pumpX, pumpY + pRad + 14);
+    }
+
+    // Fungsi Utama Ekspor Laporan PDF
+    function downloadLaporanPDF() {
+        const element = document.getElementById('area-laporan');
+        const btnPdf = document.getElementById('btn-pdf');
+        const btnCalc = document.getElementById('btn-calc');
+        const btnAddSeg = document.getElementById('btn-add-seg');
+        const delButtons = document.querySelectorAll('.btn-del-action');
+
+        // 1. Set flag cetak aktif & sembunyikan elemen tombol aksi interaktif
+        isPrintingPdf = true;
+        btnPdf.style.display = 'none';
+        btnCalc.style.display = 'none';
+        btnAddSeg.style.display = 'none';
+        delButtons.forEach(btn => btn.style.display = 'none');
+
+        // Refresh visualisasi canvas tanpa partikel berjalan agar snapshot PDF bersih
+        runSimulation();
+
+        // 2. Tentukan format penamaan file laporan PDF dinamis
+        const opsiWaktu = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const tglHariIni = new Date().toLocaleDateString('id-ID', opsiWaktu).replace(/\//g, '-');
+        const namaFileLaporan = `Laporan_Simulasi_Energi_Pipa_${tglHariIni}.pdf`;
+
+        // 3. Konfigurasi kualitas keluaran dokumen html2pdf
+        const opsiPdf = {
+            margin:       [12, 12, 12, 12], 
+            filename:     namaFileLaporan,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2,           // Menaikkan resolusi agar teks dan grafik tajam (anti-blur)
+                useCORS: true, 
+                logging: false 
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // 4. Jalankan render dokumen PDF
+        html2pdf().set(opsiPdf).from(element).save().then(() => {
+            // Kembalikan layout aplikasi web ke kondisi normal setelah unduhan selesai
+            isPrintingPdf = false;
+            btnPdf.style.display = 'block';
+            btnCalc.style.display = 'block';
+            btnAddSeg.style.display = 'block';
+            delButtons.forEach(btn => btn.style.display = 'block');
+            runSimulation(); // Hidupkan kembali animasi aliran air
+        }).catch((err) => {
+            console.error("Gagal cetak PDF:", err);
+            isPrintingPdf = false;
+            btnPdf.style.display = 'block';
+            btnCalc.style.display = 'block';
+            btnAddSeg.style.display = 'block';
+            delButtons.forEach(btn => btn.style.display = 'block');
+            runSimulation();
+        });
     }
 
     window.addEventListener('resize', () => { runSimulation(); });
