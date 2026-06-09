@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipe Energy Calculator PRO v7.35</title>
     
+    <!-- Library html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -34,6 +35,13 @@
             background: rgba(245, 158, 11, 0.15); border: 1.5px solid var(--gold); 
             color: var(--gold); padding: 6px 15px; border-radius: 20px; 
             font-size: 0.8rem; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap;
+        }
+
+        /* Container utama menggunakan ID area-laporan untuk target PDF */
+        #area-laporan {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .app-container { display: flex; flex: 1; width: 100%; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
@@ -73,18 +81,11 @@
         .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy-dark); }
         .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
         
-        /* Modifikasi ukuran kotak agar angka desimal K tidak terpotong */
         .fitting-table input { 
-            width: 75px; 
-            padding: 4px 8px; 
-            text-align: center; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 4px; 
-            font-weight: bold; 
-            margin-bottom: 0; 
-            box-sizing: border-box;
+            width: 75px; padding: 4px 8px; text-align: center; 
+            border: 1px solid #cbd5e1; border-radius: 4px; 
+            font-weight: bold; margin-bottom: 0; box-sizing: border-box;
         }
-        
         .fitting-table input[readonly] { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
 
         #canvas-wrapper { 
@@ -99,8 +100,7 @@
             backdrop-filter: blur(4px); border: 1.5px solid var(--gold); color: white; 
             padding: 12px 16px; border-radius: 10px; font-size: 0.8rem; pointer-events: none;
             opacity: 0; transition: opacity 0.15s ease, transform 0.1s ease; 
-            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.6);
-            z-index: 100; line-height: 1.5; font-family: 'Courier New', monospace;
+            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.6); z-index: 100; font-family: 'Courier New', monospace;
         }
 
         table.results { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
@@ -111,9 +111,29 @@
         .status-container { display: flex; gap: 15px; width: 100%; }
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
-        /* Aturan pembatas halaman otomatis untuk penataan dokumen PDF */
-        .pdf-page-break {
-            page-break-before: always;
+        /* ==========================================================
+           TRICK CSS: STRUKTUR OTOMATIS BERUBAH MENJADI VERTIKAL SAAT CETAK
+           ========================================================== */
+        .mode-cetak-pdf {
+            background: #f1f5f9 !important;
+            padding: 10px !important;
+        }
+        .mode-cetak-pdf .app-container {
+            display: block !important; /* Paksa sidebar dan main menumpuk ke bawah, bukan menyamping */
+        }
+        .mode-cetak-pdf #sidebar {
+            width: 100% !important;
+            min-width: 100% !important;
+            border-right: none !important;
+            border-bottom: 2px solid var(--gold) !important;
+            padding-bottom: 30px !important;
+        }
+        .mode-cetak-pdf #main {
+            width: 100% !important;
+            padding-top: 30px !important;
+        }
+        .mode-cetak-pdf .card, .mode-cetak-pdf #canvas-wrapper, .mode-cetak-pdf table.results {
+            page-break-inside: avoid; /* Mencegah card atau grafik terpotong di tengah halaman kertas */
         }
 
         @media (max-width: 1024px) {
@@ -128,8 +148,7 @@
 </head>
 <body>
 
-<div id="area-laporan" style="background: var(--bg); display: flex; flex-direction: column; min-height: 100vh;">
-
+<div id="area-laporan">
     <div id="top-header">
         <div class="header-left">
             <div class="main-title">Pipe Energy Calculator</div>
@@ -139,6 +158,7 @@
     </div>
 
     <div class="app-container">
+        <!-- SIDEBAR PARAMETER -->
         <div id="sidebar">
             <h3>Parameter Sistem</h3>
             <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
@@ -177,17 +197,18 @@
             </div>
             
             <button id="btn-calc" onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Hitung Energi</button>
-            
             <button id="btn-pdf" onclick="downloadLaporanPDF()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
         </div>
 
+        <!-- MAIN AREA GRAFIK & HASIL -->
         <div id="main">
             <div id="canvas-wrapper">
                 <div id="chart-tooltip"></div>
                 <canvas id="pCanvas"></canvas>
             </div>
 
-            <div class="pdf-page-break"></div>
+            <!-- Jeda Halaman Manual yang Terkontrol -->
+            <div class="html2pdf__page-break"></div>
 
             <div class="table-responsive" style="margin-top: 15px;">
                 <table class="results">
@@ -243,7 +264,7 @@
     let waveOffset = 0;
     let cachedResults = [];
     let drawMetrics = { gX: null, gY: null, nodes: [] };
-    let isPrintingPdf = false; // Flag untuk mendeteksi mode cetak PDF
+    let isPrintingPdf = false; 
 
     function renderFitting() {
         let totalK = 0;
@@ -267,13 +288,12 @@
             let mat = materialsData[s.matIdx];
             let coefVal = (method === "HW") ? `C=${mat.c}` : `ε=${mat.eps}`;
             
-            // Tombol hapus diberi class 'btn-del-action' agar bisa disembunyikan saat cetak
             return `<div class="card">
                 <div class="seg-header">
                     <span class="badge-l">Panjang: ${L} m</span>
                     <div style="display:flex; gap:8px; align-items:center;">
                         <span class="badge-c">${coefVal}</span>
-                        <button class="btn-delete btn-del-action" onclick="removeSegment(${i})">HAPUS</button>
+                        <button class="btn-delete" onclick="removeSegment(${i})">HAPUS</button>
                     </div>
                 </div>
                 <div style="display:flex; gap:10px">
@@ -399,13 +419,11 @@
     canvasEl.addEventListener('mouseleave', () => { tooltipEl.style.opacity = '0'; });
 
     function animationLoop() {
-        // Hentikan gerak air sesaat jika sedang proses render PDF agar snapshot stabil
         if (!isPrintingPdf) {
             animationOffset += 0.5;
             waveOffset += 0.08;
             if (animationOffset > 40) animationOffset = 0;
         }
-        
         if (cachedResults.length > 0) {
             drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value) || 0, parseFloat(document.getElementById('t_air').value) || 0);
         }
@@ -414,10 +432,9 @@
 
     function drawVisuals(res, elD, tA) {
         const c = canvasEl; const ctx = c.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = isPrintingPdf ? 2 : (window.devicePixelRatio || 1); // Kunci resolusi tinggi saat cetak
         const rect = c.getBoundingClientRect();
         
-        // Atur dimensi canvas yang konsisten saat cetak PDF vs tampilan layar umum
         c.width = rect.width * dpr; c.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
         
@@ -441,7 +458,6 @@
 
         ctx.clearRect(0, 0, width, height);
 
-        // Grid Matrix
         ctx.fillStyle = "rgba(71, 85, 105, 0.25)";
         for (let x = minX; x <= maxX; x += (maxX - minX) / 12 || 10) {
             for (let y = minY; y <= maxY; y += (maxY - minY) / 6 || 5) {
@@ -449,14 +465,12 @@
             }
         }
 
-        // Sumbu Y Elevasi
         const yStep = (maxY - minY) / 4 || 5;
         for (let y = minY; y <= maxY; y += yStep) {
             ctx.fillStyle = "#475569"; ctx.font = "bold 10px monospace"; ctx.textAlign = "right";
             ctx.fillText(y.toFixed(1) + "m", marginX - 12, gY(y) + 3);
         }
 
-        // Legenda Adaptif Anti Tabrakan
         ctx.font = "bold 11px 'Segoe UI', sans-serif"; ctx.textAlign = "left";
         let legX = marginX;
         const legSpacing = isMobile ? 75 : 140;
@@ -472,7 +486,6 @@
         ctx.fillStyle = "#f59e0b"; ctx.fillRect(legX, 17, 12, 5);
         ctx.fillStyle = "#64748b"; ctx.fillText(isMobile?"Pipa":"Pipa Transmisi", legX + 18, 22);
 
-        // Reservoir dengan Live Animation Wave
         let waterTopY = gY(elD + tA);
         let resWidth = 40 * scaleX;
         let resStartX = gX(-40);
@@ -496,15 +509,12 @@
         ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
         ctx.fillText("RESERVOIR", gX(-20), waterTopY - 12);
 
-        // HGL Dari Reservoir ke Pompa
         ctx.strokeStyle = "rgba(239, 68, 68, 0.3)"; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.moveTo(gX(-40), waterTopY); ctx.lineTo(gX(0), waterTopY); ctx.lineTo(gX(0), gY(res[1].hgl)); ctx.stroke();
         ctx.setLineDash([]);
 
-        // Pipeline & Pressure Polygon Area
         res.forEach((r, idx) => {
             if (idx >= 2) {
-                // Polygon Tekanan Gradasi Merah
                 ctx.beginPath();
                 ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl));
                 ctx.lineTo(gX(r.x2), gY(r.hgl));
@@ -516,14 +526,12 @@
                 pressGrad.addColorStop(1, "rgba(239, 68, 68, 0.0)");
                 ctx.fillStyle = pressGrad; ctx.fill();
 
-                // Struktur Pipa Utama
                 ctx.lineWidth = isMobile ? 6 : 9; ctx.strokeStyle = "#111827"; 
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
 
                 ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
 
-                // Animasi Partikel Aliran Air (Disembunyikan saat cetak PDF agar garis putih tidak putus-putus berantakan)
                 if (!isPrintingPdf) {
                     ctx.save();
                     ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
@@ -532,19 +540,16 @@
                     ctx.restore();
                 }
 
-                // Line Glow Neon (HGL & EGL)
-                ctx.save(); ctx.shadowBlur = isPrintingPdf ? 0 : 10; // Matikan shadow blur neon saat cetak agar PDF enteng
-                ctx.shadowColor = "#ef4444"; ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
+                ctx.save();
+                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
                 
-                ctx.shadowColor = "#06b6d4"; ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2;
-                ctx.setLineDash([5, 4]);
+                ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl + r.vH)); ctx.lineTo(gX(r.x2), gY(r.hgl + r.vH)); ctx.stroke();
                 ctx.restore();
 
                 drawMetrics.nodes.push({ cx: gX(r.x2), cy: gY(r.y2), type: 'junction', data: r });
 
-                // Penunjuk Titik Node Segmen
                 ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(gX(r.x2), gY(r.y2), 4, 0, Math.PI*2); ctx.fill();
                 ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1; ctx.stroke();
 
@@ -554,25 +559,12 @@
             }
         });
 
-        // Pompa Engine dengan Pulsing Glow Aura
         const pRad = isMobile ? 11 : 15;
         let pumpX = gX(0);
         let pumpY = gY(res[1].y1);
         drawMetrics.nodes.push({ cx: pumpX, cy: pumpY, type: 'pump', data: res[1] });
 
-        if (!isPrintingPdf) {
-            let pulseRadius = pRad + Math.abs(Math.sin(waveOffset * 1.5) * 4);
-            ctx.save();
-            ctx.strokeStyle = "rgba(245, 158, 11, 0.35)"; ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.arc(pumpX, pumpY, pulseRadius, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-        }
-
-        ctx.save();
-        if (!isPrintingPdf) { ctx.shadowBlur = 12; ctx.shadowColor = "#f59e0b"; }
         ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad, 0, Math.PI*2); ctx.fill();
-        ctx.restore();
-
         ctx.fillStyle = "#060b14"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad - 3, 0, Math.PI*2); ctx.fill();
         ctx.fillStyle = "#f59e0b"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
         ctx.fillText("P", pumpX, pumpY + 3.5);
@@ -581,58 +573,66 @@
         ctx.fillText("POMPA", pumpX, pumpY + pRad + 14);
     }
 
-    // Fungsi Utama Ekspor Laporan PDF
+    // ==========================================================
+    // FUNGSI UTAMA CETAK PDF: PERBAIKAN TOTAL LAYOUT BLANK
+    // ==========================================================
     function downloadLaporanPDF() {
-        const element = document.getElementById('area-laporan');
-        const btnPdf = document.getElementById('btn-pdf');
-        const btnCalc = document.getElementById('btn-calc');
-        const btnAddSeg = document.getElementById('btn-add-seg');
-        const delButtons = document.querySelectorAll('.btn-del-action');
+        const targetElement = document.getElementById('area-laporan');
+        
+        // Sembunyikan tombol navigasi sebelum render PDF dimulai
+        document.getElementById('btn-add-seg').style.display = 'none';
+        document.getElementById('btn-calc').style.display = 'none';
+        document.getElementById('btn-pdf').style.display = 'none';
+        document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'none');
 
-        // 1. Set flag cetak aktif & sembunyikan elemen tombol aksi interaktif
+        // AKTIFKAN MODE CETAK: Ubah susunan layout menjadi satu kolom vertikal yang pas di kertas A4
         isPrintingPdf = true;
-        btnPdf.style.display = 'none';
-        btnCalc.style.display = 'none';
-        btnAddSeg.style.display = 'none';
-        delButtons.forEach(btn => btn.style.display = 'none');
+        targetElement.classList.add('mode-cetak-pdf');
 
-        // Refresh visualisasi canvas tanpa partikel berjalan agar snapshot PDF bersih
+        // Hitung ulang grafik agar resolusinya langsung menyesuaikan ruang baru
         runSimulation();
 
-        // 2. Tentukan format penamaan file laporan PDF dinamis
         const opsiWaktu = { year: 'numeric', month: '2-digit', day: '2-digit' };
         const tglHariIni = new Date().toLocaleDateString('id-ID', opsiWaktu).replace(/\//g, '-');
-        const namaFileLaporan = `Laporan_Simulasi_Energi_Pipa_${tglHariIni}.pdf`;
+        const namaFileLaporan = `Laporan_Perhitungan_Energi_Pipa_${tglHariIni}.pdf`;
 
-        // 3. Konfigurasi kualitas keluaran dokumen html2pdf
         const opsiPdf = {
-            margin:       [12, 12, 12, 12], 
+            margin:       [10, 10, 10, 10], 
             filename:     namaFileLaporan,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { 
-                scale: 2,           // Menaikkan resolusi agar teks dan grafik tajam (anti-blur)
+                scale: 2,           // Jaga teks & grafik tajam
                 useCORS: true, 
-                logging: false 
+                logging: false,
+                scrollX: 0,
+                scrollY: 0
             },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] } // Membaca class pembatas halaman buatan kita secara akurat
         };
 
-        // 4. Jalankan render dokumen PDF
-        html2pdf().set(opsiPdf).from(element).save().then(() => {
-            // Kembalikan layout aplikasi web ke kondisi normal setelah unduhan selesai
+        // Render HTML ke PDF
+        html2pdf().set(opsiPdf).from(targetElement).save().then(() => {
+            // KEMBALIKAN KE LAYOUT NORMAL: Jika proses unduh sudah selesai
             isPrintingPdf = false;
-            btnPdf.style.display = 'block';
-            btnCalc.style.display = 'block';
-            btnAddSeg.style.display = 'block';
-            delButtons.forEach(btn => btn.style.display = 'block');
-            runSimulation(); // Hidupkan kembali animasi aliran air
+            targetElement.classList.remove('mode-cetak-pdf');
+            
+            document.getElementById('btn-add-seg').style.display = 'block';
+            document.getElementById('btn-calc').style.display = 'block';
+            document.getElementById('btn-pdf').style.display = 'block';
+            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
+            
+            runSimulation();
         }).catch((err) => {
-            console.error("Gagal cetak PDF:", err);
+            console.error("Gagal membuat PDF:", err);
             isPrintingPdf = false;
-            btnPdf.style.display = 'block';
-            btnCalc.style.display = 'block';
-            btnAddSeg.style.display = 'block';
-            delButtons.forEach(btn => btn.style.display = 'block');
+            targetElement.classList.remove('mode-cetak-pdf');
+            
+            document.getElementById('btn-add-seg').style.display = 'block';
+            document.getElementById('btn-calc').style.display = 'block';
+            document.getElementById('btn-pdf').style.display = 'block';
+            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
+            
             runSimulation();
         });
     }
