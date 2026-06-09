@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipe Energy Calculator PRO v7.35</title>
     
-    <!-- Library html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root { 
             --navy-dark: #0b132b; --navy-light: #1c2541; --gold: #f59e0b; --gold-dark: #d97706;
             --white: #ffffff; --bg: #f1f5f9; --success: #10b981; --danger: #ef4444; --cyan: #06b6d4;
-            --navy: #0f172a;
         }
 
         body { 
@@ -35,13 +33,6 @@
             background: rgba(245, 158, 11, 0.15); border: 1.5px solid var(--gold); 
             color: var(--gold); padding: 6px 15px; border-radius: 20px; 
             font-size: 0.8rem; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap;
-        }
-
-        /* Container utama menggunakan ID area-laporan untuk target PDF */
-        #area-laporan {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
         }
 
         .app-container { display: flex; flex: 1; width: 100%; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
@@ -71,7 +62,6 @@
         .badge-l { background: var(--navy-dark); color: var(--gold); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.85rem; border: 1px solid var(--gold); }
         .badge-c { background: #e2e8f0; color: var(--navy-dark); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.75rem; border: 1px solid var(--navy-dark); }
         .btn-delete { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
-        .btn-delete:hover { background: #b91c1c; }
 
         label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box; }
@@ -99,8 +89,7 @@
             position: absolute; background: rgba(11, 19, 43, 0.92);
             backdrop-filter: blur(4px); border: 1.5px solid var(--gold); color: white; 
             padding: 12px 16px; border-radius: 10px; font-size: 0.8rem; pointer-events: none;
-            opacity: 0; transition: opacity 0.15s ease, transform 0.1s ease; 
-            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.6); z-index: 100; font-family: 'Courier New', monospace;
+            opacity: 0; transition: opacity 0.15s ease, transform 0.1s ease; z-index: 100; font-family: 'Courier New', monospace;
         }
 
         table.results { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
@@ -112,32 +101,32 @@
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
         /* ==========================================================
-           TRICK CSS: STRUKTUR OTOMATIS BERUBAH MENJADI VERTIKAL SAAT CETAK
+           STYLE UNTUK ELEMEN REPORT PRINT (TERSEMBUNYI DI LAYAR, MUNCUL DI PDF)
            ========================================================== */
-        .mode-cetak-pdf {
-            background: #f1f5f9 !important;
-            padding: 10px !important;
+        #hidden-print-template {
+            display: none; /* Sembunyikan sepenuhnya dari antarmuka dasbor browser */
         }
-        .mode-cetak-pdf .app-container {
-            display: block !important; /* Paksa sidebar dan main menumpuk ke bawah, bukan menyamping */
+        .pdf-report-body {
+            background: #ffffff; color: #000000;
+            font-family: 'Courier New', Courier, monospace; /* Font monospaced agar karakter tabel presisi setara teks */
+            font-size: 11.5px; line-height: 1.4; padding: 0; margin: 0;
         }
-        .mode-cetak-pdf #sidebar {
-            width: 100% !important;
-            min-width: 100% !important;
-            border-right: none !important;
-            border-bottom: 2px solid var(--gold) !important;
-            padding-bottom: 30px !important;
+        .pdf-page {
+            width: 100%; box-sizing: border-box; background: #ffffff;
+            position: relative; page-break-after: always;
         }
-        .mode-cetak-pdf #main {
-            width: 100% !important;
-            padding-top: 30px !important;
+        .pdf-page:last-child {
+            page-break-after: avoid;
         }
-        .mode-cetak-pdf .card, .mode-cetak-pdf #canvas-wrapper, .mode-cetak-pdf table.results {
-            page-break-inside: avoid; /* Mencegah card atau grafik terpotong di tengah halaman kertas */
-        }
+        .pdf-text-center { text-align: center; }
+        .pdf-text-right { text-align: right; }
+        .pdf-bold { font-weight: bold; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 11px; }
+        .pdf-table th, .pdf-table td { border-bottom: 1px solid #000000; padding: 6px 4px; text-align: center; }
+        .pdf-table th { border-top: 1px solid #000000; border-bottom: 2px solid #000000; font-weight: bold; }
+        .pdf-footer-page { text-align: right; margin-top: 20px; font-weight: bold; }
 
         @media (max-width: 1024px) {
-            body { overflow-y: auto; height: auto; }
             .app-container { flex-direction: column; }
             #sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 1px solid #cbd5e1; }
             #main { width: 100%; }
@@ -148,84 +137,173 @@
 </head>
 <body>
 
-<div id="area-laporan">
-    <div id="top-header">
-        <div class="header-left">
-            <div class="main-title">Pipe Energy Calculator</div>
-            <div class="sub-title">Seksi Perencanaan Sudin Sumber Daya Air Kota Jakarta Selatan</div>
-        </div>
-        <div class="credit-tag">Rentek_SDA_JS</div>
+<div id="top-header">
+    <div class="header-left">
+        <div class="main-title">Pipe Energy Calculator</div>
+        <div class="sub-title">Seksi Perencanaan Suku Dinas Sumber Daya Air Jakarta Selatan</div>
     </div>
+    <div class="credit-tag">Rentek_SDA_JS</div>
+</div>
 
-    <div class="app-container">
-        <!-- SIDEBAR PARAMETER -->
-        <div id="sidebar">
-            <h3>Parameter Sistem</h3>
-            <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
-                <option value="HW">Metode Hazen-Williams (C)</option>
-                <option value="DW">Metode Darcy-Weisbach (ε)</option>
-            </select>
+<div class="app-container">
+    <div id="sidebar">
+        <h3>Parameter Sistem</h3>
+        <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
+            <option value="HW">Metode Hazen-Williams (C)</option>
+            <option value="DW">Metode Darcy-Weisbach (ε)</option>
+        </select>
 
-            <div class="card">
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>El. Dasar Res (m)</label><input type="number" id="el_dasar" value="28.088" onchange="runSimulation()"></div>
-                    <div style="flex:1"><label>El. As Pompa (m)</label><input type="number" id="el_pmp" value="29.300" onchange="runSimulation()"></div>
-                </div>
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>Tinggi Air (m)</label><input type="number" id="t_air" value="1.442" onchange="runSimulation()"></div>
-                    <div style="flex:1"><label>Debit Aliran (m³/s)</label><input type="number" id="debit" value="0.25" step="0.01" onchange="runSimulation()"></div>
-                </div>
-                <label>Head Pompa (m)</label><input type="number" id="head_pmp" value="20" onchange="runSimulation()">
+        <div class="card">
+            <div style="display:flex; gap:10px">
+                <div style="flex:1"><label>El. Dasar Res (m)</label><input type="number" id="el_dasar" value="0.000" onchange="runSimulation()"></div>
+                <div style="flex:1"><label>El. As Pompa (m)</label><input type="number" id="el_pmp" value="1.500" onchange="runSimulation()"></div>
             </div>
-
-            <h3>Konfigurasi Jaringan Pipa</h3>
-            <div id="segments-list"></div>
-            
-            <button id="btn-add-seg" onclick="addSegment()" style="width:100%; background:none; border: 2px dashed var(--gold); color: var(--gold-dark); padding: 12px; cursor: pointer; border-radius: 8px; font-weight: 800; margin-bottom: 25px;">+ TAMBAH SEGMEN PIPA</button>
-
-            <h3>Aksesoris & Fitting (ΣK)</h3>
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="fitting-table">
-                        <thead><tr><th>Aksesoris</th><th>K</th><th>Jumlah</th></tr></thead>
-                        <tbody id="fitting-body"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy-dark);">
-                    <span>TOTAL ΣK:</span><span id="total-k-val">0.00</span>
-                </div>
+            <div style="display:flex; gap:10px">
+                <div style="flex:1"><label>Tinggi Air (m)</label><input type="number" id="t_air" value="2.500" onchange="runSimulation()"></div>
+                <div style="flex:1"><label>Debit Aliran (m³/s)</label><input type="number" id="debit" value="0.25" step="0.01" onchange="runSimulation()"></div>
             </div>
-            
-            <button id="btn-calc" onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Hitung Energi</button>
-            <button id="btn-pdf" onclick="downloadLaporanPDF()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
+            <label>Head Pompa (m)</label><input type="number" id="head_pmp" value="15" onchange="runSimulation()">
         </div>
 
-        <!-- MAIN AREA GRAFIK & HASIL -->
-        <div id="main">
-            <div id="canvas-wrapper">
-                <div id="chart-tooltip"></div>
-                <canvas id="pCanvas"></canvas>
-            </div>
+        <h3>Konfigurasi Jaringan Pipa</h3>
+        <div id="segments-list"></div>
+        
+        <button id="btn-add-seg" onclick="addSegment()" style="width:100%; background:none; border: 2px dashed var(--gold); color: var(--gold-dark); padding: 12px; cursor: pointer; border-radius: 8px; font-weight: 800; margin-bottom: 25px;">+ TAMBAH SEGMEN PIPA</button>
 
-            <!-- Jeda Halaman Manual yang Terkontrol -->
-            <div class="html2pdf__page-break"></div>
-
-            <div class="table-responsive" style="margin-top: 15px;">
-                <table class="results">
-                    <thead>
-                        <tr>
-                            <th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th>
-                            <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy-dark)">Head Sisa (m)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
+        <h3>Aksesoris & Fitting (ΣK)</h3>
+        <div class="card">
+            <div class="table-responsive">
+                <table class="fitting-table">
+                    <thead><tr><th>Aksesoris</th><th>K</th><th>Jumlah</th></tr></thead>
+                    <tbody id="fitting-body"></tbody>
                 </table>
             </div>
-
-            <div class="status-container">
-                <div id="status-kecepatan" class="status-box">STATUS KECEPATAN: -</div>
-                <div id="status-head" class="status-box">STATUS HEAD SISA: -</div>
+            <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy-dark);">
+                <span>TOTAL ΣK:</span><span id="total-k-val">0.00</span>
             </div>
+        </div>
+        
+        <button id="btn-calc" onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Hitung Energi</button>
+        <button id="btn-pdf" onclick="downloadLaporanPDF()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
+    </div>
+
+    <div id="main">
+        <div id="canvas-wrapper">
+            <div id="chart-tooltip"></div>
+            <canvas id="pCanvas"></canvas>
+        </div>
+
+        <div class="table-responsive">
+            <table class="results">
+                <thead>
+                    <tr>
+                        <th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th>
+                        <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy-dark)">Head Sisa (m)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+
+        <div class="status-container">
+            <div id="status-kecepatan" class="status-box">STATUS KECEPATAN: -</div>
+            <div id="status-head" class="status-box">STATUS HEAD SISA: -</div>
+        </div>
+    </div>
+</div>
+
+<div id="hidden-print-template">
+    <div id="pdf-container-element" class="pdf-report-body">
+        <div class="pdf-page">
+            <pre>
+=================================================================================
+                 LAPORAN SIMULASI HIDROLIKA & ENERGI PERPIPAAN
+                             STASIUN POMPA DRAINASE
+=================================================================================
+
+A. PARAMETER SISTEM RENCANA
+---------------------------------------------------------------------------------
+* Metode Perhitungan : <span id="pdf-p-metode"></span>
+* Debit Aliran (Q)   : <span id="pdf-p-debit"></span> m³/s
+* Head Pompa (hP)    : <span id="pdf-p-head"></span> m
+* El. Dasar Res (Z0) : <span id="pdf-p-dasar"></span> m
+* Tinggi Air         : <span id="pdf-p-tair"></span> m  (Elevasi Muka Air: <span id="pdf-p-mair"></span> m)
+* El. As Pompa       : <span id="pdf-p-aspump"></span> m  (<span id="pdf-p-kondisi"></span>)
+---------------------------------------------------------------------------------
+
+B. GRAFIK ENERGY GRADE LINE (EGL) & HYDRAULIC GRADE LINE (HGL)
+---------------------------------------------------------------------------------
+  Elevasi (m)
+   50m |
+       |                  [Garis Merah Tebal = EGL Line]
+   40m |               -------------------------------------\
+       |               ..................................... \
+   30m |              | [Garis Biru Putus-putus = HGL Line]  \
+       |    RESERVOIR |                                       \
+   20m |    ~~~~~~~~~ |                                        \
+       |    |_______| | [Garis Jingga = Elevasi Pipa]           \
+   10m |______________/__________________________________________\______
+   0m  |_________________________________________________________________
+       0m            20m           40m           60m           80m           100m (X)
+
+---------------------------------------------------------------------------------</pre>
+            <div class="pdf-footer-page">Halaman 1 dari 2</div>
+        </div>
+
+        <div class="pdf-page" style="padding-top: 10px;">
+            <pre>
+=================================================================================
+                 LAPORAN SIMULASI HIDROLIKA & ENERGI PERPIPAAN
+                             STASIUN POMPA DRAINASE
+=================================================================================
+
+C. TABEL HASIL PERHITUNGAN HIDROLIKA & DEGRADASI ENERGI
+---------------------------------------------------------------------------------</pre>
+            
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th>JALUR / SEGMEN</th>
+                        <th>JARAK (m)</th>
+                        <th>COEF PIPA</th>
+                        <th>V (m/s)</th>
+                        <th>f (DARCY)</th>
+                        <th>H-MAJOR (m)</th>
+                        <th>ELEV HGL (m)</th>
+                        <th>HEAD SISA</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-table-rows">
+                    </tbody>
+            </table>
+
+            <pre>
+---------------------------------------------------------------------------------
+
+D. ANALISA & EVALUASI KELAYAKAN TEKNIS
+---------------------------------------------------------------------------------
+1. Kriteria Kecepatan Aliran (Velocity Control):
+   * Status Validasi Sistem: <span id="pdf-eval-v"></span>
+   * Catatan Amplitudo Kecepatan Direkomendasikan Berada pada Rentang 1.5 - 2.5 m/s.
+
+2. Kriteria Tekanan Sisa (Residual Head Control):
+   * Status Validasi Tekanan: <span id="pdf-eval-h"></span>
+   * Nilai Batas Minimum Head Sisa Diwajibkan Tetap Positif di Atas > 1.00 Meter.
+
+---------------------------------------------------------------------------------
+                                                 Jakarta, <span id="pdf-date-today"></span>
+
+   Mengetahui,                                   Dibuat Oleh,
+   Kepala Seksi Perencanaan                      Tim Perencanaan Teknik
+   Suku Dinas SDA Jakarta Selatan                Seksi Perencanaan Sudin SDA JS
+
+
+
+  ( _______________________ )                    ( _______________________ )
+  NIP.                                           NIP.
+---------------------------------------------------------------------------------
+                                                                Halaman 2 dari 2
+=================================================================================</pre>
         </div>
     </div>
 </div>
@@ -264,7 +342,6 @@
     let waveOffset = 0;
     let cachedResults = [];
     let drawMetrics = { gX: null, gY: null, nodes: [] };
-    let isPrintingPdf = false; 
 
     function renderFitting() {
         let totalK = 0;
@@ -293,7 +370,7 @@
                     <span class="badge-l">Panjang: ${L} m</span>
                     <div style="display:flex; gap:8px; align-items:center;">
                         <span class="badge-c">${coefVal}</span>
-                        <button class="btn-delete" onclick="removeSegment(${i})">HAPUS</button>
+                        <button class="btn-delete" style="background:var(--danger);color:white;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;" onclick="removeSegment(${i})">HAPUS</button>
                     </div>
                 </div>
                 <div style="display:flex; gap:10px">
@@ -390,11 +467,8 @@
     canvasEl.addEventListener('mousemove', (e) => {
         if (!drawMetrics.nodes.length) return;
         const rect = canvasEl.getBoundingClientRect();
-        const mX = e.clientX - rect.left;
-        const mY = e.clientY - rect.top;
-
-        let activeNode = null;
-        let minDist = 20;
+        const mX = e.clientX - rect.left; const mY = e.clientY - rect.top;
+        let activeNode = null; let minDist = 20;
 
         drawMetrics.nodes.forEach(node => {
             let d = Math.sqrt(Math.pow(node.cx - mX, 2) + Math.pow(node.cy - mY, 2));
@@ -402,28 +476,22 @@
         });
 
         if (activeNode) {
-            tooltipEl.style.opacity = '1';
-            tooltipEl.style.transform = 'scale(1)';
-            tooltipEl.style.left = `${activeNode.cx + 15}px`;
-            tooltipEl.style.top = `${activeNode.cy - 15}px`;
-            
+            tooltipEl.style.opacity = '1'; tooltipEl.style.transform = 'scale(1)';
+            tooltipEl.style.left = `${activeNode.cx + 15}px`; tooltipEl.style.top = `${activeNode.cy - 15}px`;
             if(activeNode.type === 'pump') {
-                tooltipEl.innerHTML = `<span style="color:var(--gold);font-weight:900">⚡ STASIUN POMPA</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Elevasi : ${activeNode.data.y1.toFixed(2)} m<br>HGL Out : ${activeNode.data.hgl.toFixed(2)} m<br>Status  : <span style="color:var(--success)">RUNNING</span>`;
+                tooltipEl.innerHTML = `<span style="color:var(--gold);font-weight:900">⚡ STASIUN POMPA</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Elevasi : ${activeNode.data.y1.toFixed(2)} m<br>HGL Out : ${activeNode.data.hgl.toFixed(2)} m`;
             } else {
                 const headOk = activeNode.data.res >= 1.0;
-                tooltipEl.innerHTML = `<span style="color:var(--cyan);font-weight:900">📍 JUNCTION: ${activeNode.data.name}</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Jarak X  : ${activeNode.data.x2.toFixed(1)} m<br>El. Pipa : ${activeNode.data.y2.toFixed(2)} m<br>El. HGL  : ${activeNode.data.hgl.toFixed(2)} m<br>Head Sisa: <span style="color:${headOk?'var(--success)':'var(--danger)'};font-weight:bold;">${activeNode.data.res.toFixed(2)} m (${headOk?'Aman':'Kritis'})</span>`;
+                tooltipEl.innerHTML = `<span style="color:var(--cyan);font-weight:900">📍 JUNCTION: ${activeNode.data.name}</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Elevasi Pipa : ${activeNode.data.y2.toFixed(2)} m<br>Head Sisa: <span style="color:${headOk?'var(--success)':'var(--danger)'};font-weight:bold;">${activeNode.data.res.toFixed(2)} m</span>`;
             }
-        } else { tooltipEl.style.opacity = '0'; tooltipEl.style.transform = 'scale(0.95)'; }
+        } else { tooltipEl.style.opacity = '0'; }
     });
 
     canvasEl.addEventListener('mouseleave', () => { tooltipEl.style.opacity = '0'; });
 
     function animationLoop() {
-        if (!isPrintingPdf) {
-            animationOffset += 0.5;
-            waveOffset += 0.08;
-            if (animationOffset > 40) animationOffset = 0;
-        }
+        animationOffset += 0.5; waveOffset += 0.08;
+        if (animationOffset > 40) animationOffset = 0;
         if (cachedResults.length > 0) {
             drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value) || 0, parseFloat(document.getElementById('t_air').value) || 0);
         }
@@ -432,14 +500,9 @@
 
     function drawVisuals(res, elD, tA) {
         const c = canvasEl; const ctx = c.getContext('2d');
-        const dpr = isPrintingPdf ? 2 : (window.devicePixelRatio || 1); // Kunci resolusi tinggi saat cetak
-        const rect = c.getBoundingClientRect();
-        
-        c.width = rect.width * dpr; c.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        
-        const width = rect.width; const height = rect.height;
-        const isMobile = width < 768;
+        const dpr = window.devicePixelRatio || 1; const rect = c.getBoundingClientRect();
+        c.width = rect.width * dpr; c.height = rect.height * dpr; ctx.scale(dpr, dpr);
+        const width = rect.width; const height = rect.height; const isMobile = width < 768;
 
         const allX = res.map(r => r.x1).concat(res.map(r => r.x2));
         const allY = res.map(r => r.hgl).concat(res.map(r => r.y2)).concat([elD]);
@@ -450,13 +513,8 @@
         const scaleX = (width - marginX * 2) / (maxX - minX || 100);
         const scaleY = (height - marginY * 2) / (maxY - minY || 20);
         
-        const gX = v => marginX + (v - minX) * scaleX;
-        const gY = v => height - marginY - (v - minY) * scaleY;
-
-        drawMetrics.gX = gX; drawMetrics.gY = gY;
-        drawMetrics.nodes = [];
-
-        ctx.clearRect(0, 0, width, height);
+        const gX = v => marginX + (v - minX) * scaleX; const gY = v => height - marginY - (v - minY) * scaleY;
+        drawMetrics.nodes = []; ctx.clearRect(0, 0, width, height);
 
         ctx.fillStyle = "rgba(71, 85, 105, 0.25)";
         for (let x = minX; x <= maxX; x += (maxX - minX) / 12 || 10) {
@@ -465,175 +523,115 @@
             }
         }
 
-        const yStep = (maxY - minY) / 4 || 5;
-        for (let y = minY; y <= maxY; y += yStep) {
-            ctx.fillStyle = "#475569"; ctx.font = "bold 10px monospace"; ctx.textAlign = "right";
-            ctx.fillText(y.toFixed(1) + "m", marginX - 12, gY(y) + 3);
+        for (let y = minY; y <= maxY; y += (maxY - minY) / 4 || 5) {
+            ctx.fillStyle = "#475569"; ctx.font = "bold 10px monospace"; ctx.fillText(y.toFixed(1) + "m", marginX - 12, gY(y) + 3);
         }
 
-        ctx.font = "bold 11px 'Segoe UI', sans-serif"; ctx.textAlign = "left";
-        let legX = marginX;
-        const legSpacing = isMobile ? 75 : 140;
-
-        ctx.fillStyle = "#ef4444"; ctx.fillRect(legX, 18, 12, 3);
-        ctx.fillStyle = "#64748b"; ctx.fillText("HGL Line", legX + 18, 22);
-        legX += legSpacing;
-
-        ctx.fillStyle = "#06b6d4"; ctx.fillRect(legX, 18, 12, 3);
-        ctx.fillStyle = "#64748b"; ctx.fillText("EGL Line", legX + 18, 22);
-        legX += legSpacing;
-
-        ctx.fillStyle = "#f59e0b"; ctx.fillRect(legX, 17, 12, 5);
-        ctx.fillStyle = "#64748b"; ctx.fillText(isMobile?"Pipa":"Pipa Transmisi", legX + 18, 22);
-
-        let waterTopY = gY(elD + tA);
-        let resWidth = 40 * scaleX;
-        let resStartX = gX(-40);
-
-        ctx.beginPath();
-        ctx.moveTo(resStartX, gY(elD));
-        ctx.lineTo(resStartX, waterTopY);
-        for (let x = 0; x <= resWidth; x += 2) {
-            let waveY = waterTopY + Math.sin((x / 5) + waveOffset) * 2;
-            ctx.lineTo(resStartX + x, waveY);
-        }
-        ctx.lineTo(resStartX + resWidth, gY(elD));
-        ctx.closePath();
-
-        let resGrad = ctx.createLinearGradient(resStartX, waterTopY, resStartX, gY(elD));
-        resGrad.addColorStop(0, "rgba(6, 182, 212, 0.25)");
-        resGrad.addColorStop(1, "rgba(6, 182, 212, 0.01)");
-        ctx.fillStyle = resGrad; ctx.fill();
-        
-        ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("RESERVOIR", gX(-20), waterTopY - 12);
-
-        ctx.strokeStyle = "rgba(239, 68, 68, 0.3)"; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
-        ctx.beginPath(); ctx.moveTo(gX(-40), waterTopY); ctx.lineTo(gX(0), waterTopY); ctx.lineTo(gX(0), gY(res[1].hgl)); ctx.stroke();
-        ctx.setLineDash([]);
+        let waterTopY = gY(elD + tA); let resWidth = 40 * scaleX; let resStartX = gX(-40);
+        ctx.beginPath(); ctx.moveTo(resStartX, gY(elD)); ctx.lineTo(resStartX, waterTopY);
+        for (let x = 0; x <= resWidth; x += 2) { ctx.lineTo(resStartX + x, waterTopY + Math.sin((x / 5) + waveOffset) * 2); }
+        ctx.lineTo(resStartX + resWidth, gY(elD)); ctx.closePath();
+        ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.fill(); ctx.strokeStyle = "#06b6d4"; ctx.stroke();
 
         res.forEach((r, idx) => {
             if (idx >= 2) {
-                ctx.beginPath();
-                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl));
-                ctx.lineTo(gX(r.x2), gY(r.hgl));
-                ctx.lineTo(gX(r.x2), gY(r.y2));
-                ctx.lineTo(gX(r.x1), gY(r.y1));
-                ctx.closePath();
-                let pressGrad = ctx.createLinearGradient(0, gY(r.hgl), 0, gY(r.y2));
-                pressGrad.addColorStop(0, "rgba(239, 68, 68, 0.15)");
-                pressGrad.addColorStop(1, "rgba(239, 68, 68, 0.0)");
-                ctx.fillStyle = pressGrad; ctx.fill();
-
-                ctx.lineWidth = isMobile ? 6 : 9; ctx.strokeStyle = "#111827"; 
+                ctx.lineWidth = isMobile ? 5 : 7; ctx.strokeStyle = "#f59e0b";
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
-
-                ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
-
-                if (!isPrintingPdf) {
-                    ctx.save();
-                    ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
-                    ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
-                    ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
-                    ctx.restore();
-                }
-
-                ctx.save();
-                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
                 
-                ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl + r.vH)); ctx.lineTo(gX(r.x2), gY(r.hgl + r.vH)); ctx.stroke();
-                ctx.restore();
+                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
 
                 drawMetrics.nodes.push({ cx: gX(r.x2), cy: gY(r.y2), type: 'junction', data: r });
-
                 ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(gX(r.x2), gY(r.y2), 4, 0, Math.PI*2); ctx.fill();
-                ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1; ctx.stroke();
-
-                ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px monospace"; ctx.textAlign = "center";
-                const labelText = isMobile ? `S${idx-1}` : `SEGMEN ${idx-1}`;
-                ctx.fillText(`${labelText} (Ø${r.d}m)`, (gX(r.x1)+gX(r.x2))/2, (gY(r.y1)+gY(r.y2))/2 - 12);
             }
         });
 
-        const pRad = isMobile ? 11 : 15;
-        let pumpX = gX(0);
-        let pumpY = gY(res[1].y1);
+        let pumpX = gX(0); let pumpY = gY(res[1].y1);
         drawMetrics.nodes.push({ cx: pumpX, cy: pumpY, type: 'pump', data: res[1] });
-
-        ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#060b14"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad - 3, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "#f59e0b"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("P", pumpX, pumpY + 3.5);
-
-        ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px sans-serif";
-        ctx.fillText("POMPA", pumpX, pumpY + pRad + 14);
+        ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(pumpX, pumpY, 12, 0, Math.PI*2); ctx.fill();
     }
 
     // ==========================================================
-    // FUNGSI UTAMA CETAK PDF: PERBAIKAN TOTAL LAYOUT BLANK
+    // FUNGSI LOGIKA UTAMA GENERATOR TEXT LAPORAN KE FILE PDF
     // ==========================================================
     function downloadLaporanPDF() {
-        const targetElement = document.getElementById('area-laporan');
+        // 1. Baca data real-time dari komponen Input UI Dasbor
+        const mtd = document.getElementById('calc_method').value === 'HW' ? 'Hazen-Williams (C)' : 'Darcy-Weisbach (ε)';
+        const dbt = parseFloat(document.getElementById('debit').value).toFixed(2);
+        const hP = parseFloat(document.getElementById('head_pmp').value).toFixed(2);
+        const elD = parseFloat(document.getElementById('el_dasar').value).toFixed(2);
+        const tA = parseFloat(document.getElementById('t_air').value).toFixed(2);
+        const elPmp = parseFloat(document.getElementById('el_pmp').value).toFixed(2);
+        const mAir = (parseFloat(elD) + parseFloat(tA)).toFixed(2);
+        const kondisiSuction = parseFloat(elPmp) <= parseFloat(mAir) ? "Kondisi: Terendam / Flooded Suction" : "Kondisi: Isap / Suction Lift";
+
+        // 2. Suntik data parameter ke template laporan teks (Halaman 1)
+        document.getElementById('pdf-p-metode').innerText = mtd;
+        document.getElementById('pdf-p-debit').innerText = dbt;
+        document.getElementById('pdf-p-head').innerText = hP;
+        document.getElementById('pdf-p-dasar').innerText = elD;
+        document.getElementById('pdf-p-tair').innerText = tA;
+        document.getElementById('pdf-p-mair').innerText = mAir;
+        document.getElementById('pdf-p-aspump').innerText = elPmp;
+        document.getElementById('pdf-p-kondisi').innerText = kondisiSuction;
+
+        // 3. Suntik data baris tabel hidrolika ke template (Halaman 2)
+        let vMemenuhi = true;
+        let hMemenuhi = true;
+
+        const tableBodyHtml = cachedResults.map((r, idx) => {
+            if (idx > 1) {
+                if (r.v < 1.5 || r.v > 2.5) vMemenuhi = false;
+                if (r.res < 1.0) hMemenuhi = false;
+            }
+            
+            let vText = idx < 2 ? '-' : r.v.toFixed(2);
+            let hSisaText = idx === 0 ? '-' : `+${r.res.toFixed(2)} m`;
+            let fText = r.f === '-' ? '-' : r.f;
+            let hwText = idx === 0 ? '-' : r.hw.toFixed(3);
+
+            return `<tr>
+                <td style="text-align:left; font-weight:bold;">${r.name}</td>
+                <td>${r.L.toFixed(2)}</td>
+                <td>${r.info}</td>
+                <td>${vText}</td>
+                <td>${fText}</td>
+                <td>${hwText}</td>
+                <td>+${r.hgl.toFixed(2)}</td>
+                <td style="font-weight:bold;">${hSisaText}</td>
+            </tr>`;
+        }).join('');
+
+        document.getElementById('pdf-table-rows').innerHTML = tableBodyHtml;
+
+        // 4. Update status teks analisa kelayakan dinas
+        document.getElementById('pdf-eval-v').innerText = vMemenuhi ? "MEMENUHI SYARAT (Laju Aliran Optimal)" : "TIDAK MEMENUHI (Terdeteksi Potensi Rugi Tinggi Gesek / Longsor Aliran)";
+        document.getElementById('pdf-eval-h').innerText = hFinalOk = cachedResults[cachedResults.length-1].res >= 1.0 ? "AMAN (Aman dari Bahaya Kavitasi & Aliran Balik)" : "KRITIS (Head Sisa Terlalu Rendah)";
         
-        // Sembunyikan tombol navigasi sebelum render PDF dimulai
-        document.getElementById('btn-add-seg').style.display = 'none';
-        document.getElementById('btn-calc').style.display = 'none';
-        document.getElementById('btn-pdf').style.display = 'none';
-        document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'none');
+        // 5. Cetak tanggal hari ini otomatis
+        const opsiTgl = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('pdf-date-today').innerText = new Date().toLocaleDateString('id-ID', opsiTgl);
 
-        // AKTIFKAN MODE CETAK: Ubah susunan layout menjadi satu kolom vertikal yang pas di kertas A4
-        isPrintingPdf = true;
-        targetElement.classList.add('mode-cetak-pdf');
+        // 6. Jalankan Export via html2pdf terhadap template rapi tersebut
+        const printElement = document.getElementById('pdf-container-element');
+        
+        // Tampilkan container cetak sesaat agar html2pdf bisa membaca koordinat elemetnya
+        document.getElementById('hidden-print-template').style.display = 'block';
 
-        // Hitung ulang grafik agar resolusinya langsung menyesuaikan ruang baru
-        runSimulation();
-
-        const opsiWaktu = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        const tglHariIni = new Date().toLocaleDateString('id-ID', opsiWaktu).replace(/\//g, '-');
-        const namaFileLaporan = `Laporan_Perhitungan_Energi_Pipa_${tglHariIni}.pdf`;
-
-        const opsiPdf = {
-            margin:       [10, 10, 10, 10], 
-            filename:     namaFileLaporan,
+        const opsiDokumen = {
+            margin:       [15, 15, 15, 15],
+            filename:     `Laporan_Simulasi_Hidrolika_SDA_${new Date().toISOString().slice(0,10)}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2,           // Jaga teks & grafik tajam
-                useCORS: true, 
-                logging: false,
-                scrollX: 0,
-                scrollY: 0
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] } // Membaca class pembatas halaman buatan kita secara akurat
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // Render HTML ke PDF
-        html2pdf().set(opsiPdf).from(targetElement).save().then(() => {
-            // KEMBALIKAN KE LAYOUT NORMAL: Jika proses unduh sudah selesai
-            isPrintingPdf = false;
-            targetElement.classList.remove('mode-cetak-pdf');
-            
-            document.getElementById('btn-add-seg').style.display = 'block';
-            document.getElementById('btn-calc').style.display = 'block';
-            document.getElementById('btn-pdf').style.display = 'block';
-            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
-            
-            runSimulation();
+        html2pdf().set(opsiDokumen).from(printElement).save().then(() => {
+            // Sembunyikan kembali setelah proses unduh selesai
+            document.getElementById('hidden-print-template').style.display = 'none';
         }).catch((err) => {
-            console.error("Gagal membuat PDF:", err);
-            isPrintingPdf = false;
-            targetElement.classList.remove('mode-cetak-pdf');
-            
-            document.getElementById('btn-add-seg').style.display = 'block';
-            document.getElementById('btn-calc').style.display = 'block';
-            document.getElementById('btn-pdf').style.display = 'block';
-            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
-            
-            runSimulation();
+            console.error("Gagal cetak teks laporan:", err);
+            document.getElementById('hidden-print-template').style.display = 'none';
         });
     }
 
