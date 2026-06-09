@@ -6,144 +6,102 @@
     <title>Pipe Energy Calculator PRO v7.35</title>
     <style>
         :root { 
-            --navy: #0f172a; --gold: #f59e0b; --gold-dark: #d97706;
-            --white: #ffffff; --bg: #f1f5f9; --success: #10b981; --danger: #ef4444;
+            --navy-dark: #0b132b; --navy-light: #1c2541; --gold: #f59e0b; --gold-dark: #d97706;
+            --white: #ffffff; --bg: #f1f5f9; --success: #10b981; --danger: #ef4444; --cyan: #06b6d4;
+            --navy: #0f172a;
         }
 
-        /* SUSUNAN UTAMA MENGGUNAKAN FLEXBOX */
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
-            margin: 0; 
-            background: var(--bg); 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0; background: var(--bg); 
+            display: flex; flex-direction: column; 
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        /* HEADER FIX */
         #top-header {
-            width: 100%;
-            height: 80px;
-            background: var(--navy); 
-            color: white; 
-            display: flex; 
-            align-items: center;
-            justify-content: space-between; 
-            padding: 0 25px; 
-            border-bottom: 5px solid var(--gold); 
-            box-sizing: border-box;
+            width: 100%; height: 80px; background: var(--navy-dark); color: white; 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 25px; border-bottom: 5px solid var(--gold); box-sizing: border-box;
         }
         .header-left { display: flex; flex-direction: column; }
-        .main-title { font-weight: 900; font-size: 1.3rem; text-transform: uppercase; }
+        .main-title { font-weight: 900; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.5px; }
         .sub-title { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
         
         .credit-tag { 
-            background: rgba(245, 158, 11, 0.15); 
-            border: 1.5px solid var(--gold); 
-            color: var(--gold); 
-            padding: 6px 15px; 
-            border-radius: 20px; 
-            font-size: 0.8rem; 
-            font-weight: 900; 
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+            background: rgba(245, 158, 11, 0.15); border: 1.5px solid var(--gold); 
+            color: var(--gold); padding: 6px 15px; border-radius: 20px; 
+            font-size: 0.8rem; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap;
         }
 
-        /* CONTAINER LAYOUT UTAMA (FLEXBOX) */
-        .app-container {
-            display: flex;
-            flex: 1;
-            width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
+        .app-container { display: flex; flex: 1; width: 100%; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
 
-        /* SIDEBAR INPUT (KIRI) */
         #sidebar { 
-            width: 420px; 
-            min-width: 420px;
-            background: var(--white); 
-            border-right: 1px solid #cbd5e1; 
-            padding: 25px; 
-            box-sizing: border-box;
+            width: 420px; min-width: 420px; background: var(--white); 
+            border-right: 1px solid #cbd5e1; padding: 25px; box-sizing: border-box;
         }
         
-        /* AREA OUTPUT HASIL & GRAFIK (KANAN) */
         #main { 
-            flex-grow: 1; 
-            padding: 25px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            box-sizing: border-box;
-            overflow-x: hidden;
+            flex-grow: 1; padding: 25px; display: flex; flex-direction: column; 
+            gap: 20px; box-sizing: border-box; overflow-x: hidden;
         }
 
         h3 { 
-            font-size: 1.1rem; 
-            color: var(--gold-dark); 
-            border-left: 5px solid var(--gold); 
-            padding-left: 12px; 
-            margin: 15px 0 15px 0; 
-            text-transform: uppercase;
-            font-weight: 900;
-            line-height: 1.2;
+            font-size: 1.1rem; color: var(--gold-dark); border-left: 5px solid var(--gold); 
+            padding-left: 12px; margin: 15px 0; text-transform: uppercase; font-weight: 900;
         }
         
         .card { 
-            background: white; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 10px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border-top: 4px solid var(--navy); 
+            background: white; border: 1px solid #e2e8f0; border-radius: 10px; 
+            padding: 15px; margin-bottom: 15px; border-top: 4px solid var(--navy-dark); 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
         }
         .seg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; }
         
-        .badge-l { background: var(--navy); color: var(--gold); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.85rem; border: 1px solid var(--gold); }
-        .badge-c { background: #e2e8f0; color: var(--navy); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.75rem; border: 1px solid var(--navy); }
-
+        .badge-l { background: var(--navy-dark); color: var(--gold); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.85rem; border: 1px solid var(--gold); }
+        .badge-c { background: #e2e8f0; color: var(--navy-dark); padding: 5px 10px; border-radius: 6px; font-weight: 900; font-size: 0.75rem; border: 1px solid var(--navy-dark); }
         .btn-delete { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
         .btn-delete:hover { background: #b91c1c; }
 
         label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box; }
 
-        /* TABEL AKSESORIS */
         .table-responsive { width: 100%; overflow-x: auto; }
         .fitting-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy); }
+        .fitting-table th { text-align: left; padding: 8px; border-bottom: 2px solid var(--gold); background: #f8fafc; color: var(--navy-dark); }
         .fitting-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
         .fitting-table input { width: 55px; padding: 6px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; margin-bottom: 0; }
 
-        /* AREA VISUALISASI CANVAS */
-        #canvas-wrapper { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); position: relative;}
-        canvas { width: 100%; height: 420px; display: block; }
+        #canvas-wrapper { 
+            background: #060b14; border-radius: 14px; border: 2px solid #1e293b; 
+            padding: 20px; box-shadow: inset 0 4px 25px rgba(0,0,0,0.7), 0 10px 15px -3px rgba(0,0,0,0.3); 
+            position: relative;
+        }
+        canvas { width: 100%; height: 420px; display: block; cursor: crosshair; }
 
-        /* TABEL HASIL ENERGI */
+        #chart-tooltip {
+            position: absolute; background: rgba(11, 19, 43, 0.92);
+            backdrop-filter: blur(4px); border: 1.5px solid var(--gold); color: white; 
+            padding: 12px 16px; border-radius: 10px; font-size: 0.8rem; pointer-events: none;
+            opacity: 0; transition: opacity 0.15s ease, transform 0.1s ease; 
+            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.6);
+            z-index: 100; line-height: 1.5; font-family: 'Courier New', monospace;
+        }
+
         table.results { width: 100%; border-collapse: collapse; background: white; font-size: 0.85rem; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
-        table.results th { background: var(--navy); color: white; padding: 15px; text-transform: uppercase; font-size: 0.75rem; }
+        table.results th { background: var(--navy-dark); color: white; padding: 15px; text-transform: uppercase; font-size: 0.75rem; }
         table.results td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: center; }
         .row-special { background: #fffbeb; font-weight: bold; }
 
-        /* KOTAK STATUS LAYAK */
         .status-container { display: flex; gap: 15px; width: 100%; }
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
-        /* =========================================================
-            ⚡ MEDIA QUERIES RESPONSIF BREAKPOINT UNTUK HP & TABLET 
-           ========================================================= */
         @media (max-width: 1024px) {
             body { overflow-y: auto; height: auto; }
             .app-container { flex-direction: column; }
             #sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 1px solid #cbd5e1; }
             #main { width: 100%; }
             .status-container { flex-direction: column; gap: 10px; }
-            .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            canvas { height: 320px; } /* Perkecil grafik sedikit di HP agar proporsional */
+            canvas { height: 320px; }
         }
     </style>
 </head>
@@ -158,7 +116,6 @@
 </div>
 
 <div class="app-container">
-
     <div id="sidebar">
         <h3>Parameter Sistem</h3>
         <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
@@ -190,15 +147,16 @@
                     <tbody id="fitting-body"></tbody>
                 </table>
             </div>
-            <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy);">
+            <div style="margin-top:15px; border-top: 2px solid var(--gold); padding-top:12px; display:flex; justify-content:space-between; font-weight:900; font-size: 1.1rem; color: var(--navy-dark);">
                 <span>TOTAL ΣK:</span><span id="total-k-val">0.00</span>
             </div>
         </div>
-        <button onclick="runSimulation()" style="width:100%; background:var(--navy); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:40px;">Hitung Energi</button>
+        <button onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:40px;">Hitung Energi</button>
     </div>
 
     <div id="main">
         <div id="canvas-wrapper">
+            <div id="chart-tooltip"></div>
             <canvas id="pCanvas"></canvas>
         </div>
 
@@ -207,7 +165,7 @@
                 <thead>
                     <tr>
                         <th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th>
-                        <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy)">Head Sisa (m)</th>
+                        <th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th style="background:var(--gold); color:var(--navy-dark)">Head Sisa (m)</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -219,8 +177,9 @@
             <div id="status-head" class="status-box">STATUS HEAD SISA: -</div>
         </div>
     </div>
+</div>
 
-</div> <script>
+<script>
     const materialsData = [
         { label: "HDPE / PVC", c: 150, eps: 0.0000015 },
         { label: "Baja / Steel", c: 100, eps: 0.000045 },
@@ -249,6 +208,11 @@
         { name: 'Flexible Joint', k: 0.20, qty: 0 },
         { name: 'Pipe Exit (Outlet)', k: 1.00, qty: 0 }
     ];
+
+    let animationOffset = 0;
+    let waveOffset = 0;
+    let cachedResults = [];
+    let drawMetrics = { gX: null, gY: null, nodes: [] };
 
     function renderFitting() {
         let totalK = 0;
@@ -295,15 +259,12 @@
     function addSegment() { 
         const lastSeg = segments[segments.length-1];
         segments.push({...lastSeg, x: lastSeg.x + 50}); 
-        renderSegmentsUI(); 
-        runSimulation();
+        renderSegmentsUI(); runSimulation();
     }
 
     function removeSegment(index) {
         if (segments.length > 1) {
-            segments.splice(index, 1);
-            renderSegmentsUI();
-            runSimulation();
+            segments.splice(index, 1); renderSegmentsUI(); runSimulation();
         } else {
             alert("Minimal harus ada 1 segmen pipa!");
         }
@@ -341,9 +302,7 @@
                 let Re = (v * s.d) / nu;
                 if (Re > 2300) {
                     fVal = 0.25 / Math.pow(Math.log10((mat.eps/(3.7*s.d)) + (5.74/Math.pow(Re, 0.9))), 2);
-                } else {
-                    fVal = 64 / Re;
-                }
+                } else { fVal = 64 / Re; }
                 hw = fVal * (L/s.d) * vH;
                 fVal = fVal.toFixed(4);
             }
@@ -351,9 +310,11 @@
             const minor = (i === 0) ? (totalK * vH) : 0; 
             curHGL -= (hw + minor);
             velocities.push(v);
-            results.push({ name: `Segmen ${i+1}`, info: (method==='HW'?mat.c:mat.eps), L, v, vH, f: fVal, hw, hgl:curHGL, res:curHGL-s.y, x1:prevX, y1:prevY, x2:s.x, y2:s.y });
+            results.push({ name: `Segmen ${i+1}`, info: (method==='HW'?mat.c:mat.eps), L, v, vH, f: fVal, hw, hgl:curHGL, res:curHGL-s.y, x1:prevX, y1:prevY, x2:s.x, y2:s.y, d:s.d });
             prevX=s.x; prevY=s.y;
         });
+
+        cachedResults = results;
 
         document.getElementById('table-body').innerHTML = results.map((r,idx) => {
             const vOk = r.v >= 1.5 && r.v <= 2.5; const hOk = r.res >= 1.0;
@@ -369,186 +330,218 @@
         document.getElementById('status-kecepatan').innerText = `STATUS KECEPATAN: ${vAllOk?'MEMENUHI':'TIDAK MEMENUHI'}`;
         document.getElementById('status-head').style.background = hFinalOk ? 'var(--success)' : 'var(--danger)';
         document.getElementById('status-head').innerText = `STATUS HEAD SISA: ${hFinalOk?'MEMENUHI':'TIDAK MEMENUHI'}`;
-
-        draw(results, elD, tA);
     }
 
-    // 🌟 FUNGSI GRAPHICS UTAMA DENGAN OPTIMASI HIGH-DPI & GRID LINES
-    function draw(res, elD, tA) {
-        const c = document.getElementById('pCanvas'); 
-        const ctx = c.getContext('2d');
+    const canvasEl = document.getElementById('pCanvas');
+    const tooltipEl = document.getElementById('chart-tooltip');
+
+    canvasEl.addEventListener('mousemove', (e) => {
+        if (!drawMetrics.nodes.length) return;
+        const rect = canvasEl.getBoundingClientRect();
+        const mX = e.clientX - rect.left;
+        const mY = e.clientY - rect.top;
+
+        let activeNode = null;
+        let minDist = 20;
+
+        drawMetrics.nodes.forEach(node => {
+            let d = Math.sqrt(Math.pow(node.cx - mX, 2) + Math.pow(node.cy - mY, 2));
+            if (d < minDist) { minDist = d; activeNode = node; }
+        });
+
+        if (activeNode) {
+            tooltipEl.style.opacity = '1';
+            tooltipEl.style.transform = 'scale(1)';
+            tooltipEl.style.left = `${activeNode.cx + 15}px`;
+            tooltipEl.style.top = `${activeNode.cy - 15}px`;
+            
+            if(activeNode.type === 'pump') {
+                tooltipEl.innerHTML = `<span style="color:var(--gold);font-weight:900">⚡ STASIUN POMPA</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Elevasi : ${activeNode.data.y1.toFixed(2)} m<br>HGL Out : ${activeNode.data.hgl.toFixed(2)} m<br>Status  : <span style="color:var(--success)">RUNNING</span>`;
+            } else {
+                const headOk = activeNode.data.res >= 1.0;
+                tooltipEl.innerHTML = `<span style="color:var(--cyan);font-weight:900">📍 JUNCTION: ${activeNode.data.name}</span><hr style="border:0;border-top:1px dashed rgba(255,255,255,0.2);margin:5px 0;">Jarak X  : ${activeNode.data.x2.toFixed(1)} m<br>El. Pipa : ${activeNode.data.y2.toFixed(2)} m<br>El. HGL  : ${activeNode.data.hgl.toFixed(2)} m<br>Head Sisa: <span style="color:${headOk?'var(--success)':'var(--danger)'};font-weight:bold;">${activeNode.data.res.toFixed(2)} m (${headOk?'Aman':'Kritis'})</span>`;
+            }
+        } else { tooltipEl.style.opacity = '0'; tooltipEl.style.transform = 'scale(0.95)'; }
+    });
+
+    canvasEl.addEventListener('mouseleave', () => { tooltipEl.style.opacity = '0'; });
+
+    function animationLoop() {
+        animationOffset += 0.5;
+        waveOffset += 0.08;
+        if (animationOffset > 40) animationOffset = 0;
         
-        // ⚡ FIX ANTI-BLUR: Skala resolusi canvas internal berdasarkan rasio pixel device (HP/Retina)
+        if (cachedResults.length > 0) {
+            drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value), parseFloat(document.getElementById('t_air').value));
+        }
+        requestAnimationFrame(animationLoop);
+    }
+
+    function drawVisuals(res, elD, tA) {
+        const c = canvasEl; const ctx = c.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
         const rect = c.getBoundingClientRect();
-        c.width = rect.width * dpr;
-        c.height = rect.height * dpr;
+        c.width = rect.width * dpr; c.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
         
-        const width = rect.width;
-        const height = rect.height;
-        const isMobile = width < 768; // Deteksi perangkat mobile
+        const width = rect.width; const height = rect.height;
+        const isMobile = width < 768;
 
-        // Hitung Extent Data Koordinat
         const allX = res.map(r => r.x1).concat(res.map(r => r.x2));
         const allY = res.map(r => r.hgl).concat(res.map(r => r.y2)).concat([elD]);
-        const minX = Math.min(...allX); 
-        const maxX = Math.max(...allX);
-        const minY = Math.min(...allY); 
-        const maxY = Math.max(...allY);
+        const minX = Math.min(...allX); const maxX = Math.max(...allX);
+        const minY = Math.min(...allY); const maxY = Math.max(...allY);
         
-        // Margin dinamis untuk memberikan ruang teks skala elevasi
-        const marginX = isMobile ? 45 : 80;
-        const marginY = isMobile ? 50 : 75;
-        
+        const marginX = isMobile ? 45 : 80; const marginY = isMobile ? 50 : 75;
         const scaleX = (width - marginX * 2) / (maxX - minX || 100);
         const scaleY = (height - marginY * 2) / (maxY - minY || 20);
         
         const gX = v => marginX + (v - minX) * scaleX;
         const gY = v => height - marginY - (v - minY) * scaleY;
 
+        drawMetrics.gX = gX; drawMetrics.gY = gY;
+        drawMetrics.nodes = [];
+
         ctx.clearRect(0, 0, width, height);
 
-        // 🎨 1. LATAR BELAKANG GRID TIMBUL (Engineering Grid Style)
-        ctx.lineWidth = 0.5;
-        ctx.strokeStyle = "#e2e8f0";
-        
-        // Garis Grid Vertikal
-        const xStep = (maxX - minX) / 5 || 20;
-        for (let x = minX; x <= maxX; x += xStep) {
-            ctx.beginPath();
-            ctx.moveTo(gX(x), marginY);
-            ctx.lineTo(gX(x), height - marginY);
-            ctx.stroke();
+        // Grid Matrix
+        ctx.fillStyle = "rgba(71, 85, 105, 0.25)";
+        for (let x = minX; x <= maxX; x += (maxX - minX) / 12 || 10) {
+            for (let y = minY; y <= maxY; y += (maxY - minY) / 6 || 5) {
+                ctx.beginPath(); ctx.arc(gX(x), gY(y), 1, 0, Math.PI*2); ctx.fill();
+            }
         }
-        // Garis Grid Horizontal + Label Skala Elevasi Samping
+
+        // Sumbu Y Elevasi
         const yStep = (maxY - minY) / 4 || 5;
         for (let y = minY; y <= maxY; y += yStep) {
-            ctx.beginPath();
-            ctx.moveTo(marginX, gY(y));
-            ctx.lineTo(width - marginX, gY(y));
-            ctx.stroke();
-            
-            ctx.fillStyle = "#64748b";
-            ctx.font = "10px sans-serif";
-            ctx.textAlign = "right";
-            ctx.fillText(y.toFixed(1) + "m", marginX - 8, gY(y) + 3);
+            ctx.fillStyle = "#475569"; ctx.font = "bold 10px monospace"; ctx.textAlign = "right";
+            ctx.fillText(y.toFixed(1) + "m", marginX - 12, gY(y) + 3);
         }
 
-        // 🎨 2. LEGENDA FLEXIBLE ADAPTIF SCREEN (SUDAH DIPERBAIKI - ANTI TABRAKAN)
-        ctx.font = isMobile ? "bold 10px 'Segoe UI', sans-serif" : "11px 'Segoe UI', sans-serif"; 
-        ctx.textAlign = "left";
-        
-        if (isMobile) {
-            let startX = marginX;
-            
-            // Legend 1: HGL
-            ctx.fillStyle = "red"; ctx.fillRect(startX, 15, 15, 2);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", startX + 20, 18);
-            
-            // Legend 2: EGL
-            let startX2 = startX + 110;
-            ctx.fillStyle = "blue"; ctx.fillRect(startX2, 15, 15, 2);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", startX2 + 20, 18);
-            
-            // Legend 3: Pipa
-            let startX3 = startX2 + 100;
-            ctx.fillStyle = "#334155"; ctx.fillRect(startX3, 13, 15, 5);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", startX3 + 20, 18);
-        } else {
-            let startX = width - 160;
-            
-            ctx.fillStyle = "red"; ctx.fillRect(startX, 20, 15, 2);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", startX + 20, 25);
-            
-            ctx.fillStyle = "blue"; ctx.fillRect(startX, 40, 15, 2);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", startX + 20, 45);
-            
-            ctx.fillStyle = "#334155"; ctx.fillRect(startX, 60, 15, 5);
-            ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", startX + 20, 66);
-        }
+        // Legenda Adaptif Anti Tabrakan
+        ctx.font = "bold 11px 'Segoe UI', sans-serif"; ctx.textAlign = "left";
+        let legX = marginX;
+        const legSpacing = isMobile ? 75 : 140;
 
-        // 🎨 3. VISUALISASI STRUKTUR RESERVOIR
-        ctx.fillStyle = "rgba(14, 165, 233, 0.15)"; 
-        ctx.fillRect(gX(-40), gY(elD + tA), 40 * scaleX, tA * scaleY);
-        ctx.strokeStyle = "#0f172a"; 
-        ctx.lineWidth = 2; 
-        ctx.strokeRect(gX(-40), gY(elD + tA), 40 * scaleX, tA * scaleY);
-        
-        ctx.fillStyle = "#0f172a"; 
-        ctx.font = isMobile ? "bold 10px Segoe UI" : "bold 12px Segoe UI"; 
-        ctx.textAlign = "center";
-        ctx.fillText("RESERVOIR", gX(-20), gY(elD + tA) - 10);
-        
-        // Hubungan Awal Garis HGL dari Elevasi Muka Air Reservoir
-        ctx.setLineDash([4, 4]); 
-        ctx.strokeStyle = "red"; 
-        ctx.lineWidth = 1.5;
+        ctx.fillStyle = "#ef4444"; ctx.fillRect(legX, 18, 12, 3);
+        ctx.fillStyle = "#64748b"; ctx.fillText("HGL Line", legX + 18, 22);
+        legX += legSpacing;
+
+        ctx.fillStyle = "#06b6d4"; ctx.fillRect(legX, 18, 12, 3);
+        ctx.fillStyle = "#64748b"; ctx.fillText("EGL Line", legX + 18, 22);
+        legX += legSpacing;
+
+        ctx.fillStyle = "#f59e0b"; ctx.fillRect(legX, 17, 12, 5);
+        ctx.fillStyle = "#64748b"; ctx.fillText(isMobile?"Pipa":"Pipa Transmisi", legX + 18, 22);
+
+        // Reservoir dengan Live Animation Wave
+        let waterTopY = gY(elD + tA);
+        let resWidth = 40 * scaleX;
+        let resStartX = gX(-40);
+
         ctx.beginPath();
-        ctx.moveTo(gX(-40), gY(elD + tA)); 
-        ctx.lineTo(gX(0), gY(elD + tA)); 
-        ctx.lineTo(gX(0), gY(res[1].hgl)); 
-        ctx.stroke();
+        ctx.moveTo(resStartX, gY(elD));
+        ctx.lineTo(resStartX, waterTopY);
+        for (let x = 0; x <= resWidth; x += 2) {
+            let waveY = waterTopY + Math.sin((x / 5) + waveOffset) * 2;
+            ctx.lineTo(resStartX + x, waveY);
+        }
+        ctx.lineTo(resStartX + resWidth, gY(elD));
+        ctx.closePath();
 
-        // 🎨 4. PLOTTING GRAFIK PIPA, EGL, & HGL SECARA BERTAHAP
+        let resGrad = ctx.createLinearGradient(resStartX, waterTopY, resStartX, gY(elD));
+        resGrad.addColorStop(0, "rgba(6, 182, 212, 0.25)");
+        resGrad.addColorStop(1, "rgba(6, 182, 212, 0.01)");
+        ctx.fillStyle = resGrad; ctx.fill();
+        
+        ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("RESERVOIR", gX(-20), waterTopY - 12);
+
+        // HGL Dari Reservoir ke Pompa
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.3)"; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(gX(-40), waterTopY); ctx.lineTo(gX(0), waterTopY); ctx.lineTo(gX(0), gY(res[1].hgl)); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Pipeline & Pressure Polygon Area
         res.forEach((r, idx) => {
             if (idx >= 2) {
-                // Rendering Fisik Jalur Pipa
-                ctx.lineWidth = isMobile ? 4 : 6; 
-                ctx.strokeStyle = "#334155"; 
-                ctx.setLineDash([]);
-                ctx.beginPath(); 
-                ctx.moveTo(gX(r.x1), gY(r.y1)); 
-                ctx.lineTo(gX(r.x2), gY(r.y2)); 
-                ctx.stroke();
+                // Polygon Tekanan Gradasi Merah
+                ctx.beginPath();
+                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl));
+                ctx.lineTo(gX(r.x2), gY(r.hgl));
+                ctx.lineTo(gX(r.x2), gY(r.y2));
+                ctx.lineTo(gX(r.x1), gY(r.y1));
+                ctx.closePath();
+                let pressGrad = ctx.createLinearGradient(0, gY(r.hgl), 0, gY(r.y2));
+                pressGrad.addColorStop(0, "rgba(239, 68, 68, 0.15)");
+                pressGrad.addColorStop(1, "rgba(239, 68, 68, 0.0)");
+                ctx.fillStyle = pressGrad; ctx.fill();
+
+                // Struktur Pipa Utama
+                ctx.lineWidth = isMobile ? 6 : 9; ctx.strokeStyle = "#111827"; 
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+
+                ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+
+                // Animasi Partikel Aliran Air
+                ctx.save();
+                ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
+                ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+                ctx.restore();
+
+                // Line Glow Neon (HGL & EGL)
+                ctx.save(); ctx.shadowBlur = 10;
+                ctx.shadowColor = "#ef4444"; ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl)); ctx.stroke();
                 
-                // Penulisan Notasi Segmen Pintar (Disingkat di Mobile)
-                ctx.fillStyle = "#475569"; 
-                ctx.font = isMobile ? "9px Segoe UI" : "bold 11px Segoe UI"; 
-                ctx.textAlign = "center";
+                ctx.shadowColor = "#06b6d4"; ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl + r.vH)); ctx.lineTo(gX(r.x2), gY(r.hgl + r.vH)); ctx.stroke();
+                ctx.restore();
+
+                drawMetrics.nodes.push({ cx: gX(r.x2), cy: gY(r.y2), type: 'junction', data: r });
+
+                // Penunjuk Titik Node Segmen
+                ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(gX(r.x2), gY(r.y2), 4, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1; ctx.stroke();
+
+                ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px monospace"; ctx.textAlign = "center";
                 const labelText = isMobile ? `S${idx-1}` : `SEGMEN ${idx-1}`;
-                ctx.fillText(labelText, (gX(r.x1) + gX(r.x2)) / 2, (gY(r.y1) + gY(r.y2)) / 2 - 12);
-                
-                // Rendering Garis Hidrolik Tekanan Air (HGL - Merah Putus-putus)
-                ctx.lineWidth = 1.5; 
-                ctx.setLineDash([4, 3]); 
-                ctx.strokeStyle = "red"; 
-                ctx.beginPath(); 
-                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); 
-                ctx.lineTo(gX(r.x2), gY(r.hgl)); 
-                ctx.stroke();
-                
-                // Rendering Garis Energi Total Aliran (EGL - Biru Solid)
-                ctx.setLineDash([]); 
-                ctx.strokeStyle = "blue"; 
-                ctx.beginPath(); 
-                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl + r.vH)); 
-                ctx.lineTo(gX(r.x2), gY(r.hgl + r.vH)); 
-                ctx.stroke();
+                ctx.fillText(`${labelText} (Ø${r.d}m)`, (gX(r.x1)+gX(r.x2))/2, (gY(r.y1)+gY(r.y2))/2 - 12);
             }
         });
 
-        // 🎨 5. SIMBOL DAN TEKS POMPA SENTRIFUGAL
-        ctx.setLineDash([]);
-        ctx.beginPath(); 
-        ctx.fillStyle = "#0f172a"; 
-        const pRadius = isMobile ? 11 : 15;
-        ctx.arc(gX(0), gY(res[1].y1), pRadius, 0, Math.PI * 2); 
-        ctx.fill();
-        
-        ctx.fillStyle = "white"; 
-        ctx.font = isMobile ? "bold 10px Arial" : "bold 12px Arial"; 
-        ctx.textAlign = "center";
-        ctx.fillText("P", gX(0), gY(res[1].y1) + (isMobile ? 3.5 : 4));
-        
-        ctx.fillStyle = "#0f172a"; 
-        ctx.font = isMobile ? "bold 9px Segoe UI" : "bold 11px Segoe UI"; 
-        ctx.fillText("POMPA", gX(0), gY(res[1].y1) + (isMobile ? 22 : 30));
+        // Pompa Engine dengan Pulsing Glow Aura
+        const pRad = isMobile ? 11 : 15;
+        let pumpX = gX(0);
+        let pumpY = gY(res[1].y1);
+        drawMetrics.nodes.push({ cx: pumpX, cy: pumpY, type: 'pump', data: res[1] });
+
+        let pulseRadius = pRad + Math.abs(Math.sin(waveOffset * 1.5) * 4);
+        ctx.save();
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.35)"; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(pumpX, pumpY, pulseRadius, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.shadowBlur = 12; ctx.shadowColor = "#f59e0b";
+        ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        ctx.fillStyle = "#060b14"; ctx.beginPath(); ctx.arc(pumpX, pumpY, pRad - 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#f59e0b"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("P", pumpX, pumpY + 3.5);
+
+        ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px sans-serif";
+        ctx.fillText("POMPA", pumpX, pumpY + pRad + 14);
     }
 
-    // Event listener tambahan untuk resize layar otomatis redraw grafik canvas
     window.addEventListener('resize', () => { runSimulation(); });
-    window.onload = () => { renderFitting(); renderSegmentsUI(); runSimulation(); };
+    window.onload = () => { renderFitting(); renderSegmentsUI(); runSimulation(); animationLoop(); };
 </script>
 
 </body>
