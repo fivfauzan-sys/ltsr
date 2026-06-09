@@ -86,17 +86,22 @@
             color: white;
         }
 
+       /* --- TAMPILAN UTAMA (MENGGUNAKAN FLEXBOX UNTUK PC/LAPTOP) --- */
         .container {
-            max-width: 900px;
-            margin: -50px auto 50px;
+            display: flex;
+            justify-content: center;   /* Membuat 3 kartu berkumpul rapi di tengah */
+            align-items: stretch;      /* Tinggi ketiga kartu otomatis SAMA RATA */
+            gap: 25px;                 /* Jarak antar kartu */
+            max-width: 1200px;         /* Diperlebar dari 900px ke 1200px supaya muat sejajar */
+            margin: -50px auto 50px;   /* Tetap menjaga posisi naik ke atas header */
             padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
         }
 
-        /* CARD STYLE */
+        /* CARD STYLE WITH FLEXBOX ELEMENT */
         .card {
+            flex: 1;                   /* Membagi ruang sama rata (1:1:1) untuk ketiga kartu */
+            min-width: 280px;          /* Batas lebar minimum kartu agar tulisan tidak penyok */
+            max-width: 350px;          /* Batas lebar maksimum tiap kartu */
             background: white;
             border-radius: 30px;
             padding: 40px 30px;
@@ -109,6 +114,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        /* --- BREAKPOINT RESPONSIF (OTOMATIS MENYESUAIKAN DI HP) --- */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column; /* Mengubah barisan menyamping menjadi bertumpuk ke bawah */
+                align-items: center;    /* Kartu tetap rapi rata tengah di layar HP */
+                gap: 20px;
+                margin-top: 20px;       /* Penyesuaian margin agar tidak terlalu menempel ke atas di HP */
+            }
+            
+            .card {
+                width: 100%;            /* Kartu melebar mengikuti layar smartphone */
+                max-width: 90%;         /* Menyisakan sedikit ruang di sisi kanan-kiri HP */
+            }
+        
         }
 
         .card:hover:not(.locked) {
