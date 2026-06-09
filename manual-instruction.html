@@ -3,79 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Instruction - SDA Engineering Hub</title>
+    <title>Manual Book - SDA Engineering Hub Jakarta Selatan</title>
     <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --text: #334155;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #0f172a;
-            background: #f8fafc;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
             margin: 0;
             padding: 40px 20px;
         }
         .container-manual {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
         }
-        h1 { color: #0f172a; border-bottom: 4px solid #f59e0b; padding-bottom: 10px; }
-        h2 { color: #0f172a; margin-top: 30px; display: flex; align-items: center; gap: 10px;}
-        .flow-step {
-            background: #f1f5f9;
-            padding: 15px 20px;
-            border-left: 5px solid #f59e0b;
-            margin-bottom: 15px;
-            border-radius: 0 10px 10px 0;
+        .header-manual {
+            border-bottom: 4px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
         }
-        .badge {
-            background: #0f172a;
+        h1 { color: var(--primary); margin: 0; font-size: 2.2rem; font-weight: 800; }
+        .subtitle { color: #64748b; font-size: 1.1rem; margin-top: 5px; }
+        
+        h2 { color: var(--primary); font-size: 1.5rem; margin-top: 40px; border-left: 5px solid var(--accent); padding-left: 15px; }
+        h3 { color: var(--primary); font-size: 1.15rem; margin-top: 25px; }
+        
+        p { margin-bottom: 20px; text-align: justify; }
+        ul, ol { padding-left: 20px; margin-bottom: 25px; }
+        li { margin-bottom: 10px; }
+        
+        .alert-box {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-left: 5px solid var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        .alert-box strong { color: #b45309; }
+
+        .table-style {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        .table-style th, .table-style td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .table-style th {
+            background: var(--primary);
             color: white;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.85rem;
+        }
+        .table-style tr:nth-child(even) { background: #f8fafc; }
+        
+        .code-inline {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #0f172a;
         }
     </style>
 </head>
 <body>
 
 <div class="container-manual">
-    <h1>📖 Manual Instruction & Flow Penggunaan</h1>
-    <p>Selamat datang di panduan penggunaan <strong>SDA Engineering Hub Jakarta Selatan</strong>. Halaman ini menjelaskan langkah operasional sistem.</p>
+    <div class="header-manual">
+        <h1>📖 BUKU PANDUAN TEKNIS (MANUAL BOOK)</h1>
+        <div class="subtitle">SDA Engineering Hub — Suku Dinas Sumber Daya Air Jakarta Selatan</div>
+    </div>
 
-    <h2>1. 🧭 Flow Umum Penggunaan Aplikasi</h2>
+    <p>Buku panduan ini disusun sebagai acuan resmi operasional aplikasi internal berbasis web <strong>SDA Engineering Hub</strong>. Aplikasi ini dirancang untuk mempercepat proses analisis hidrolika praktis dan simulasi sistem drainase di lingkungan kerja Seksi Perencanaan Jakarta Selatan.</p>
+
+    <!-- BAB 1 -->
+    <h2>1. Arsitektur Keamanan & Sistem Akses Portal</h2>
+    <p>Aplikasi dilengkapi dengan lapisan enkripsi visual (blur overlay) untuk memastikan data perencanaan internal tidak diakses oleh pihak luar secara bebas. Pengguna diwajibkan melewati tahap otentikasi lokal.</p>
     
-    <div class="flow-step">
-        <strong>Langkah 1: Verifikasi Akses</strong><br>
-        Masukkan kode verifikasi rahasia (4 digit) pada halaman depan untuk membuka enkripsi blur dashboard.
+    <h3>Alur Kerja (Flow) Log-In:</h3>
+    <ol>
+        <li>Saat tautan dashboard dibuka, sistem memicu elemen overlay <span class="code-inline">#login-overlay</span> yang mengaburkan seluruh konten utama di belakangnya.</li>
+        <li>Pengguna diminta memasukkan 4-Digit Kode Akses Verifikasi pada kolom yang tersedia.</li>
+        <li>Sistem mengecek input secara *real-time* berbasis JavaScript. Jika kode benar (<span class="code-inline">9999</span>), efek blur akan dihilangkan, kontrol klik diaktifkan, dan animasi transisi halaman dimulai.</li>
+        <li>Jika input salah, sistem menampilkan peringatan eror merah <em>"EITSSS, KODENYA SALAH!!"</em> dan mengosongkan kembali kolom inputan.</li>
+    </ol>
+
+    <div class="alert-box">
+        <strong>⚠️ CATATAN KEAMANAN:</strong> Kode akses bawaan diatur pada kombinasi <strong>9999</strong>. Untuk keperluan perubahan kode di masa mendatang, modifikasi variabel <span class="code-inline">KODE_RAHASIA</span> pada skrip baris akhir di file master <span class="code-inline">index.html</span>.
     </div>
+
+    <!-- BAB 2 -->
+    <h2>2. Modul 1: Pump Storage Simulator</h2>
+    <p>Modul simulator ini difungsikan untuk memprediksi serta menganalisis stabilitas kapasitas tampungan air pada kolam olakan (wet well) stasiun pompa banjir pompa pengendali banjir.</p>
     
-    <div class="flow-step">
-        <strong>Langkah 2: Pilih Modul Analisis</strong><br>
-        Pilih salah satu engineering tools yang tersedia (Pump Simulator atau Pipe Calculator) sesuai kebutuhan perencanaan.
-    </div>
-
-    <div class="flow-step">
-        <strong>Langkah 3: Input Data & Analisis</strong><br>
-        Masukkan parameter teknis di dalam modul, lakukan kalkulasi, dan gunakan tombol kembali (Back) jika ingin berpindah modul.
-    </div>
-
-    <h2>2. 📈 Panduan Pump Storage Simulator</h2>
-    <p>Modul ini digunakan untuk mensimulasikan volume kolam olakan dan kapasitas pompa banjir.</p>
+    <h3>A. Parameter Input Penting:</h3>
     <ul>
-        <li>Input Tinggi Muka Air (TMA) awal kolam olakan.</li>
-        <li>Tentukan debit banjir rencana yang masuk ke sistem drainase.</li>
-        <li>Sistem akan menyajikan rekomendasi durasi running pompa secara otomatis.</li>
+        <li><strong>Tinggi Muka Air (TMA) Awal (m):</strong> Level air aktual di dalam kolam olakan sebelum pompa dinyalakan.</li>
+        <li><strong>Debit Banjir Masuk / Inflow (m³/s):</strong> Estimasi debit air yang masuk dari saluran makro/mikro menuju kolam olakan berdasarkan intensitas curah hujan rencana.</li>
+        <li><strong>Kapasitas Pompa Eksisting (m³/s atau saringan liter/detik):</strong> Total debit buang dari kombinasi unit pompa yang diaktifkan di lokasi penanganan.</li>
     </ul>
 
-    <h2>3. 🧪 Panduan Pipe Energy Calculator</h2>
-    <p>Modul untuk menghitung kehilangan tekanan pada sistem perpipaan tertutup.</p>
-    <ul>
-        <li>Pilih material pipa (PVC, HDPE, Steel) untuk menentukan koefisien kekasaran.</li>
-        <li>Input panjang pipa, diameter dalam, dan debit aliran cairan.</li>
-        <li>Klik 'Hitung' untuk mendapatkan nilai total <em>Head Loss</em> (Mayor & Minor).</li>
+    <h3>B. Alur Simulasi & Output:</h3>
+    <p>Simulator ini menghitung kesetimbangan massa air menggunakan persamaan kontinuitas sederhana:</p>
+    <p style="font-family: monospace; text-align: center; background: #f1f5f9; padding: 10px; border-radius: 8px;">
+        ΔVolume = (Inflow - Outflow) × Waktu
+    </p>
+    <p>Hasil akhir analisis akan memunculkan rekomendasi berupa status keamanan kolam olakan, estimasi waktu kritis sebelum limpas (overtopping), serta grafik tren kenaikan/penurunan TMA.</p>
+
+    <!-- BAB 3 -->
+    <h2>3. Modul 2: Pipe Energy Calculator</h2>
+    <p>Modul kalkulator perpipaan ini digunakan oleh tim perencanaan untuk menghitung parameter kehilangan energi (head loss) pada sistem pipa tekan (discharge pipe) pompa air.</p>
+    
+    <h3>A. Metode Perhitungan:</h3>
+    <p>Kalkulator ini mengadopsi 2 metode pendekatan hidrolika utama yang umum digunakan dalam dunia teknik sipil keairan:</p>
+    <ol>
+        <li><strong>Metode Hazen-Williams:</strong> Sangat ideal untuk perhitungan praktis pada jaringan pipa air bersih atau air banjir dengan temperatur normal. Menggunakan koefisien kekasaran <span class="code-inline">C</span>.</li>
+        <li><strong>Metode Darcy-Weisbach:</strong> Pendekatan yang jauh lebih akurat secara teoritis karena mempertimbangkan nilai viskositas kinematik fluida dan angka Reynold untuk menentukan faktor gesekan pipa (<span class="code-inline">f</span>).</li>
+    </ol>
+
+    <h3>B. Panduan Nilai Koefisien Kekasaran Material Pipa:</h3>
+    <table class="table-style">
+        <thead>
+            <tr>
+                <th>Jenis Material Pipa</th>
+                <th>Koefisien Hazen-Williams (C)</th>
+                <th>Kekasaran Absolut Darcy (ε - mm)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>PVC / Polyethylene (HDPE)</td>
+                <td>140 - 150</td>
+                <td>0.0015 - 0.007</td>
+            </tr>
+            <tr>
+                <td>Ductile Iron Pipe (DIP)</td>
+                <td>130</td>
+                <td>0.25</td>
+            </tr>
+            <tr>
+                <td>Welded Steel (Baja)</td>
+                <td>120</td>
+                <td>0.045</td>
+            </tr>
+            <tr>
+                <td>Beton (Concrete)</td>
+                <td>100 - 110</td>
+                <td>0.3 - 3.0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>C. Langkah Operasional Kalkulator:</h3>
+    <ol>
+        <li>Buka modul melalui tombol <strong>"Buka Calculator →"</strong> pada dasbor utama.</li>
+        <li>Pilih opsi metode perhitungan yang ingin digunakan pada menu drop-down.</li>
+        <li>Input geometri pipa meliputi: <strong>Diameter Dalam (mm)</strong> dan <strong>Panjang Total Jalur Pipa (m)</strong>.</li>
+        <li>Masukkan nilai <strong>Debit Aliran Rencana (Liters/second atau m³/s)</strong>.</li>
+        <li>Klik <strong>"Hitung Head Loss"</strong>. Sistem akan langsung mengeluarkan total kehilangan tinggi tekan utama (*major losses*).</li>
+    </ol>
+
+    <!-- BAB 4 -->
+    <h2>4. Prosedur Navigasi & Pemeliharaan Sistem</h2>
+    <h3>A. Navigasi Portal Efisien:</h3>
+    <p>Sistem menggunakan elemen <span class="code-inline">&lt;iframe&gt;</span> dinamis bernama <span class="code-inline">#portal</span>. Ketika tombol salah satu modul diklik, halaman utama tidak melakukan *reload* penuh, melainkan hanya memuat file anak di dalam portal overlay. Gunakan tombol melayang **"⬅ BACK TO DASHBOARD"** di pojok kiri bawah untuk keluar dari modul dengan aman tanpa meriset status login.</p>
+
+    <h3>B. Struktur Manajemen File di GitHub:</h3>
+    <p>Untuk memastikan aplikasi web tetap berjalan normal di GitHub Pages, susunan direktori repositori harus dijaga seperti berikut:</p>
+    <ul style="font-family: monospace; list-style-type: none;">
+        <li>📂 nama-repositori-kamu/</li>
+        <li>├── 📄 index.html <span style="color: #64748b;">(Dashboard Utama & Sistem Login)</span></li>
+        <li>├── 📄 pipe-energy.html <span style="color: #64748b;">(Modul Kalkulator)</span></li>
+        <li>├── 📄 pump-storage.html <span style="color: #64748b;">(Modul Simulator Pompa)</span></li>
+        <li>└── 📄 manual-instruction.html <span style="color: #64748b;">(Halaman Manual Book Ini)</span></li>
     </ul>
 </div>
 
