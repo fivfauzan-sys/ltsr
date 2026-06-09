@@ -134,7 +134,7 @@
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
         /* =========================================================
-           ⚡ MEDIA QUERIES RESPONSIF BREAKPOINT UNTUK HP & TABLET 
+            ⚡ MEDIA QUERIES RESPONSIF BREAKPOINT UNTUK HP & TABLET 
            ========================================================= */
         @media (max-width: 1024px) {
             body { overflow-y: auto; height: auto; }
@@ -373,57 +373,165 @@
         draw(results, elD, tA);
     }
 
+    // 🌟 FUNGSI GRAPHICS UTAMA DENGAN OPTIMASI HIGH-DPI & GRID LINES
     function draw(res, elD, tA) {
-        const c = document.getElementById('pCanvas'); const ctx = c.getContext('2d');
-        c.width = c.offsetWidth; c.height = c.offsetHeight;
+        const c = document.getElementById('pCanvas'); 
+        const ctx = c.getContext('2d');
+        
+        // ⚡ FIX ANTI-BLUR: Skala resolusi canvas internal berdasarkan rasio pixel device (HP/Retina)
+        const dpr = window.devicePixelRatio || 1;
+        const rect = c.getBoundingClientRect();
+        c.width = rect.width * dpr;
+        c.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        const width = rect.width;
+        const height = rect.height;
+        const isMobile = width < 768; // Deteksi perangkat mobile
+
+        // Hitung Extent Data Koordinat
         const allX = res.map(r => r.x1).concat(res.map(r => r.x2));
         const allY = res.map(r => r.hgl).concat(res.map(r => r.y2)).concat([elD]);
-        const minX = Math.min(...allX); const maxX = Math.max(...allX);
-        const minY = Math.min(...allY); const maxY = Math.max(...allY);
-        const margin = 75;
-        const scaleX = (c.width - margin * 2) / (maxX - minX || 100);
-        const scaleY = (c.height - margin * 2) / (maxY - minY || 20);
-        const gX = v => margin + (v - minX) * scaleX;
-        const gY = v => c.height - margin - (v - minY) * scaleY;
-
-        ctx.clearRect(0,0,c.width,c.height);
-
-        // LEGENDA
-        ctx.font = "11px Arial"; ctx.textAlign = "left";
-        ctx.fillStyle = "red"; ctx.fillRect(c.width-150, 20, 15, 2); ctx.fillStyle = "black"; ctx.fillText("HGL (Tekanan)", c.width-130, 25);
-        ctx.fillStyle = "blue"; ctx.fillRect(c.width-150, 40, 15, 2); ctx.fillStyle = "black"; ctx.fillText("EGL (Total Energy)", c.width-130, 45);
-        ctx.fillStyle = "#334155"; ctx.fillRect(c.width-150, 60, 15, 6); ctx.fillStyle = "black"; ctx.fillText("Pipa Jalur", c.width-130, 66);
-
-        // RESERVOIR
-        ctx.fillStyle = "rgba(14, 165, 233, 0.2)"; ctx.fillRect(gX(-40), gY(elD+tA), 40*scaleX, tA*scaleY);
-        ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 2; ctx.strokeRect(gX(-40), gY(elD+tA), 40*scaleX, tA*scaleY);
-        ctx.fillStyle = "#0f172a"; ctx.font = "bold 13px Segoe UI"; ctx.textAlign = "center";
-        ctx.fillText("RESERVOIR", gX(-20), gY(elD+tA) - 15);
+        const minX = Math.min(...allX); 
+        const maxX = Math.max(...allX);
+        const minY = Math.min(...allY); 
+        const maxY = Math.max(...allY);
         
-        // HGL STARTING
-        ctx.setLineDash([6,4]); ctx.strokeStyle="red"; ctx.beginPath();
-        ctx.moveTo(gX(-40), gY(elD+tA)); ctx.lineTo(gX(0), gY(elD+tA)); 
-        ctx.lineTo(gX(0), gY(res[1].hgl)); ctx.stroke();
+        // Margin dinamis untuk memberikan ruang teks skala elevasi
+        const marginX = isMobile ? 45 : 80;
+        const marginY = isMobile ? 50 : 75;
+        
+        const scaleX = (width - marginX * 2) / (maxX - minX || 100);
+        const scaleY = (height - marginY * 2) / (maxY - minY || 20);
+        
+        const gX = v => marginX + (v - minX) * scaleX;
+        const gY = v => height - marginY - (v - minY) * scaleY;
 
+        ctx.clearRect(0, 0, width, height);
+
+        // 🎨 1. LATAR BELAKANG GRID TIMBUL (Engineering Grid Style)
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = "#e2e8f0";
+        
+        // Garis Grid Vertikal
+        const xStep = (maxX - minX) / 5 || 20;
+        for (let x = minX; x <= maxX; x += xStep) {
+            ctx.beginPath();
+            ctx.moveTo(gX(x), marginY);
+            ctx.lineTo(gX(x), height - marginY);
+            ctx.stroke();
+        }
+        // Garis Grid Horizontal + Label Skala Elevasi Samping
+        const yStep = (maxY - minY) / 4 || 5;
+        for (let y = minY; y <= maxY; y += yStep) {
+            ctx.beginPath();
+            ctx.moveTo(marginX, gY(y));
+            ctx.lineTo(width - marginX, gY(y));
+            ctx.stroke();
+            
+            ctx.fillStyle = "#64748b";
+            ctx.font = "10px sans-serif";
+            ctx.textAlign = "right";
+            ctx.fillText(y.toFixed(1) + "m", marginX - 8, gY(y) + 3);
+        }
+
+        // 🎨 2. LEGENDA FLEXIBLE ADAPTIF SCREEN
+        ctx.font = isMobile ? "bold 10px Segoe UI" : "11px Arial"; 
+        ctx.textAlign = "left";
+        
+        const legX = isMobile ? marginX : width - 160;
+        const legStep = isMobile ? (width - marginX*2) / 3 : 20;
+        
+        // Legend: HGL
+        ctx.fillStyle = "red"; ctx.fillRect(legX, isMobile ? 15 : 20, 15, 2);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("HGL (Tekanan)", legX + 20, isMobile ? 18 : 25);
+        
+        // Legend: EGL
+        const legX2 = isMobile ? legX + legStep : legX;
+        ctx.fillStyle = "blue"; ctx.fillRect(legX2, isMobile ? 15 : 40, 15, 2);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("EGL (Energi)", legX2 + 20, isMobile ? 18 : 45);
+        
+        // Legend: Pipa
+        const legX3 = isMobile ? legX + (legStep * 2) : legX;
+        ctx.fillStyle = "#334155"; ctx.fillRect(legX3, isMobile ? 13 : 60, 15, 5);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("Pipa Jalur", legX3 + 20, isMobile ? 18 : 66);
+
+        // 🎨 3. VISUALISASI STRUKTUR RESERVOIR
+        ctx.fillStyle = "rgba(14, 165, 233, 0.15)"; 
+        ctx.fillRect(gX(-40), gY(elD + tA), 40 * scaleX, tA * scaleY);
+        ctx.strokeStyle = "#0f172a"; 
+        ctx.lineWidth = 2; 
+        ctx.strokeRect(gX(-40), gY(elD + tA), 40 * scaleX, tA * scaleY);
+        
+        ctx.fillStyle = "#0f172a"; 
+        ctx.font = isMobile ? "bold 10px Segoe UI" : "bold 12px Segoe UI"; 
+        ctx.textAlign = "center";
+        ctx.fillText("RESERVOIR", gX(-20), gY(elD + tA) - 10);
+        
+        // Hubungan Awal Garis HGL dari Elevasi Muka Air Reservoir
+        ctx.setLineDash([4, 4]); 
+        ctx.strokeStyle = "red"; 
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(gX(-40), gY(elD + tA)); 
+        ctx.lineTo(gX(0), gY(elD + tA)); 
+        ctx.lineTo(gX(0), gY(res[1].hgl)); 
+        ctx.stroke();
+
+        // 🎨 4. PLOTTING GRAFIK PIPA, EGL, & HGL SECARA BERTAHAP
         res.forEach((r, idx) => {
             if (idx >= 2) {
-                ctx.lineWidth=7; ctx.strokeStyle = "#334155"; ctx.setLineDash([]);
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+                // Rendering Fisik Jalur Pipa
+                ctx.lineWidth = isMobile ? 4 : 6; 
+                ctx.strokeStyle = "#334155"; 
+                ctx.setLineDash([]);
+                ctx.beginPath(); 
+                ctx.moveTo(gX(r.x1), gY(r.y1)); 
+                ctx.lineTo(gX(r.x2), gY(r.y2)); 
+                ctx.stroke();
                 
-                ctx.fillStyle = "#0f172a"; ctx.font = "bold 12px Segoe UI"; ctx.textAlign = "center";
-                ctx.fillText(`SEGMEN ${idx-1}`, (gX(r.x1)+gX(r.x2))/2, (gY(r.y1)+gY(r.y2))/2 - 20);
+                // Penulisan Notasi Segmen Pintar (Disingkat di Mobile)
+                ctx.fillStyle = "#475569"; 
+                ctx.font = isMobile ? "9px Segoe UI" : "bold 11px Segoe UI"; 
+                ctx.textAlign = "center";
+                const labelText = isMobile ? `S${idx-1}` : `SEGMEN ${idx-1}`;
+                ctx.fillText(labelText, (gX(r.x1) + gX(r.x2)) / 2, (gY(r.y1) + gY(r.y2)) / 2 - 12);
                 
-                ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.strokeStyle="red"; 
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); ctx.lineTo(gX(r.x2), gY(r.hgl).toFixed(2)); ctx.stroke();
-                ctx.setLineDash([]); ctx.strokeStyle="blue"; 
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl+r.vH)); ctx.lineTo(gX(r.x2), gY(r.hgl+r.vH)); ctx.stroke();
+                // Rendering Garis Hidrolik Tekanan Air (HGL - Merah Putus-putus)
+                ctx.lineWidth = 1.5; 
+                ctx.setLineDash([4, 3]); 
+                ctx.strokeStyle = "red"; 
+                ctx.beginPath(); 
+                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl)); 
+                ctx.lineTo(gX(r.x2), gY(r.hgl)); 
+                ctx.stroke();
+                
+                // Rendering Garis Energi Total Aliran (EGL - Biru Solid)
+                ctx.setLineDash([]); 
+                ctx.strokeStyle = "blue"; 
+                ctx.beginPath(); 
+                ctx.moveTo(gX(r.x1), gY(res[idx-1].hgl + r.vH)); 
+                ctx.lineTo(gX(r.x2), gY(r.hgl + r.vH)); 
+                ctx.stroke();
             }
         });
 
-        // POMPA ICON & NOTATION
-        ctx.beginPath(); ctx.fillStyle = "#0f172a"; ctx.arc(gX(0), gY(res[1].y1), 16, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.fillText("P", gX(0), gY(res[1].y1)+5);
-        ctx.fillStyle = "#0f172a"; ctx.font = "bold 13px Segoe UI"; ctx.fillText("POMPA", gX(0), gY(res[1].y1) + 38);
+        // 🎨 5. SIMBOL DAN TEKS POMPA SENTRIFUGAL
+        ctx.setLineDash([]);
+        ctx.beginPath(); 
+        ctx.fillStyle = "#0f172a"; 
+        const pRadius = isMobile ? 11 : 15;
+        ctx.arc(gX(0), gY(res[1].y1), pRadius, 0, Math.PI * 2); 
+        ctx.fill();
+        
+        ctx.fillStyle = "white"; 
+        ctx.font = isMobile ? "bold 10px Arial" : "bold 12px Arial"; 
+        ctx.textAlign = "center";
+        ctx.fillText("P", gX(0), gY(res[1].y1) + (isMobile ? 3.5 : 4));
+        
+        ctx.fillStyle = "#0f172a"; 
+        ctx.font = isMobile ? "bold 9px Segoe UI" : "bold 11px Segoe UI"; 
+        ctx.fillText("POMPA", gX(0), gY(res[1].y1) + (isMobile ? 22 : 30));
     }
 
     // Event listener tambahan untuk resize layar otomatis redraw grafik canvas
