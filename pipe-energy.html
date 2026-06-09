@@ -64,6 +64,9 @@
 
         label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box; }
+        
+        /* Style tambahan untuk input yang dikunci (readonly) */
+        input[readonly].bg-light { background-color: #f1f5f9; color: #475569; cursor: not-allowed; }
 
         .table-responsive { width: 100%; overflow-x: auto; }
         .fitting-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
@@ -214,13 +217,14 @@
     let cachedResults = [];
     let drawMetrics = { gX: null, gY: null, nodes: [] };
 
+    // FUNGSI DIPERBARUI: Ditambahkan atribut 'readonly' dan class 'bg-light' pada input koefisien K
     function renderFitting() {
         let totalK = 0;
         document.getElementById('fitting-body').innerHTML = fittingData.map((f, i) => {
             totalK += f.k * f.qty;
             return `<tr><td>${f.name}</td>
-                <td><input type="number" step="0.01" value="${f.k}" onchange="fittingData[${i}].k=parseFloat(this.value); runSimulation();"></td>
-                <td><input type="number" value="${f.qty}" onchange="fittingData[${i}].qty=parseInt(this.value); runSimulation();"></td></tr>`;
+                <td><input type="number" step="0.01" value="${f.k}" class="form-control bg-light" readonly></td>
+                <td><input type="number" value="${f.qty}" onchange="fittingData[${i}].qty=parseInt(this.value)||0; runSimulation();"></td></tr>`;
         }).join('');
         document.getElementById('total-k-val').innerText = totalK.toFixed(2);
         return totalK;
@@ -317,14 +321,16 @@
         cachedResults = results;
 
         document.getElementById('table-body').innerHTML = results.map((r,idx) => {
-            const vOk = r.v >= 1.5 && r.v <= 2.5; const hOk = r.res >= 1.0;
+            // DIPERBARUI: Ambang batas toleransi kecepatan atas disesuaikan menjadi 3.0 m/s khusus sistem pompa banjir
+            const vOk = r.v >= 1.5 && r.v <= 3.0; const hOk = r.res >= 1.0;
             return `<tr class="${idx < 2 ? 'row-special' : ''}"><td>${r.name}</td><td>${r.info}</td><td>${r.L.toFixed(1)}</td>
                 <td style="color:${idx<2?'inherit':(vOk?'var(--success)':'var(--danger)')}; font-weight:bold">${idx < 2 ? '-' : r.v.toFixed(2)}</td>
                 <td>${r.f}</td><td>${r.hw.toFixed(3)}</td><td>${r.hgl.toFixed(2)}</td>
                 <td style="font-weight:bold; color:${hOk?'var(--success)':'var(--danger)'}">${idx === 0 ? '-' : r.res.toFixed(2) + ' m'}</td></tr>`;
         }).join('');
 
-        const vAllOk = velocities.every(v => v >= 1.5 && v <= 2.5);
+        // DIPERBARUI: Logika pemantauan status kotak indikator bawah juga mengikuti batas 3.0 m/s
+        const vAllOk = velocities.every(v => v >= 1.5 && v <= 3.0);
         const hFinalOk = results[results.length-1].res >= 1.0;
         document.getElementById('status-kecepatan').style.background = vAllOk ? 'var(--success)' : 'var(--danger)';
         document.getElementById('status-kecepatan').innerText = `STATUS KECEPATAN: ${vAllOk?'MEMENUHI':'TIDAK MEMENUHI'}`;
@@ -484,7 +490,7 @@
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
 
                 ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
-                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); stroke();
 
                 // Animasi Partikel Aliran Air
                 ctx.save();
