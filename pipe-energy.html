@@ -544,6 +544,37 @@
     // =========================================================================
     function openPrintReport() {
         const reportWindow = window.open('', '_blank');
+        reportWindow.document.write(`
+            <html>
+            <head>
+                <title>Laporan Teknis</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 40px; color: #000; }
+                    .kop-table { width: 100%; border-bottom: 3px double #000; margin-bottom: 20px; }
+                    .kop-text { text-align: center; line-height: 1.4; }
+                    .meta-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    .meta-table th, .meta-table td { border: 1px solid #cbd5e1; padding: 8px; }
+                    h2 { margin: 0; text-transform: uppercase; }
+                </style>
+            </head>
+            <body>
+                <table class="kop-table">
+                    <tr>
+                        <td style="width: 100px; padding-bottom: 15px;"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Coat_of_arms_of_Jakarta.svg" width="70"></td>
+                        <td class="kop-text">
+                            <div style="font-weight: bold; font-size: 16px;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
+                            <div style="font-weight: 800; font-size: 18px;">DINAS SUMBER DAYA AIR</div>
+                            <div style="font-weight: 800; font-size: 16px;">SUKU DINAS SUMBER DAYA AIR KOTA ADM. JAKARTA SELATAN</div>
+                            <div style="font-size: 11px;">Jl. Radio Dalam Raya No.109, Jakarta Selatan | dsdajakarta.go.id</div>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2 style="text-align: center; margin-bottom: 20px;">LAPORAN TEKNIS ANALISIS HIDROLIS</h2>
+                
+                <table class="meta-table">
+        `);
+        // ... lanjutkan dengan sisa kode Anda
         const tglSekarang = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
         const namaProj = document.getElementById('nama_project').value || "Pembangunan Jaringan Pipa Transmisi Utama";
         const elD = parseFloat(document.getElementById('el_dasar').value).toFixed(2);
