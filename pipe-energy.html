@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipe Energy Calculator PRO v7.35</title>
     
-    <!-- Library html2pdf.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <style>
         :root { 
             --navy-dark: #0b132b; --navy-light: #1c2541; --gold: #f59e0b; --gold-dark: #d97706;
@@ -37,7 +34,6 @@
             font-size: 0.8rem; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap;
         }
 
-        /* Container utama menggunakan ID area-laporan untuk target PDF */
         #area-laporan {
             display: flex;
             flex-direction: column;
@@ -111,31 +107,6 @@
         .status-container { display: flex; gap: 15px; width: 100%; }
         .status-box { flex: 1; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: 900; font-size: 1.1rem; }
 
-        /* ==========================================================
-           TRICK CSS: STRUKTUR OTOMATIS BERUBAH MENJADI VERTIKAL SAAT CETAK
-           ========================================================== */
-        .mode-cetak-pdf {
-            background: #f1f5f9 !important;
-            padding: 10px !important;
-        }
-        .mode-cetak-pdf .app-container {
-            display: block !important; /* Paksa sidebar dan main menumpuk ke bawah, bukan menyamping */
-        }
-        .mode-cetak-pdf #sidebar {
-            width: 100% !important;
-            min-width: 100% !important;
-            border-right: none !important;
-            border-bottom: 2px solid var(--gold) !important;
-            padding-bottom: 30px !important;
-        }
-        .mode-cetak-pdf #main {
-            width: 100% !important;
-            padding-top: 30px !important;
-        }
-        .mode-cetak-pdf .card, .mode-cetak-pdf #canvas-wrapper, .mode-cetak-pdf table.results {
-            page-break-inside: avoid; /* Mencegah card atau grafik terpotong di tengah halaman kertas */
-        }
-
         @media (max-width: 1024px) {
             body { overflow-y: auto; height: auto; }
             .app-container { flex-direction: column; }
@@ -158,7 +129,6 @@
     </div>
 
     <div class="app-container">
-        <!-- SIDEBAR PARAMETER -->
         <div id="sidebar">
             <h3>Parameter Sistem</h3>
             <select id="calc_method" onchange="runSimulation(); renderSegmentsUI();">
@@ -197,18 +167,14 @@
             </div>
             
             <button id="btn-calc" onclick="runSimulation()" style="width:100%; background:var(--navy-dark); color:var(--gold); border:2px solid var(--gold); padding:20px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Hitung Energi</button>
-            <button id="btn-pdf" onclick="downloadLaporanPDF()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
+            <button id="btn-pdf" onclick="openPrintReport()" style="width:100%; background:var(--success); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:1px; font-size:0.9rem; margin-bottom:40px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">💾 Download Laporan PDF</button>
         </div>
 
-        <!-- MAIN AREA GRAFIK & HASIL -->
         <div id="main">
             <div id="canvas-wrapper">
                 <div id="chart-tooltip"></div>
                 <canvas id="pCanvas"></canvas>
             </div>
-
-            <!-- Jeda Halaman Manual yang Terkontrol -->
-            <div class="html2pdf__page-break"></div>
 
             <div class="table-responsive" style="margin-top: 15px;">
                 <table class="results">
@@ -264,7 +230,6 @@
     let waveOffset = 0;
     let cachedResults = [];
     let drawMetrics = { gX: null, gY: null, nodes: [] };
-    let isPrintingPdf = false; 
 
     function renderFitting() {
         let totalK = 0;
@@ -419,11 +384,10 @@
     canvasEl.addEventListener('mouseleave', () => { tooltipEl.style.opacity = '0'; });
 
     function animationLoop() {
-        if (!isPrintingPdf) {
-            animationOffset += 0.5;
-            waveOffset += 0.08;
-            if (animationOffset > 40) animationOffset = 0;
-        }
+        animationOffset += 0.5;
+        waveOffset += 0.08;
+        if (animationOffset > 40) animationOffset = 0;
+        
         if (cachedResults.length > 0) {
             drawVisuals(cachedResults, parseFloat(document.getElementById('el_dasar').value) || 0, parseFloat(document.getElementById('t_air').value) || 0);
         }
@@ -432,7 +396,7 @@
 
     function drawVisuals(res, elD, tA) {
         const c = canvasEl; const ctx = c.getContext('2d');
-        const dpr = isPrintingPdf ? 2 : (window.devicePixelRatio || 1); // Kunci resolusi tinggi saat cetak
+        const dpr = window.devicePixelRatio || 1;
         const rect = c.getBoundingClientRect();
         
         c.width = rect.width * dpr; c.height = rect.height * dpr;
@@ -532,13 +496,11 @@
                 ctx.lineWidth = isMobile ? 3 : 5; ctx.strokeStyle = "#f59e0b";
                 ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
 
-                if (!isPrintingPdf) {
-                    ctx.save();
-                    ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
-                    ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
-                    ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
-                    ctx.restore();
-                }
+                ctx.save();
+                ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff";
+                ctx.setLineDash([4, 16]); ctx.lineDashOffset = -animationOffset;
+                ctx.beginPath(); ctx.moveTo(gX(r.x1), gY(r.y1)); ctx.lineTo(gX(r.x2), gY(r.y2)); ctx.stroke();
+                ctx.restore();
 
                 ctx.save();
                 ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
@@ -573,68 +535,223 @@
         ctx.fillText("POMPA", pumpX, pumpY + pRad + 14);
     }
 
-    // ==========================================================
-    // FUNGSI UTAMA CETAK PDF: PERBAIKAN TOTAL LAYOUT BLANK
-    // ==========================================================
-    function downloadLaporanPDF() {
-        const targetElement = document.getElementById('area-laporan');
+    // =========================================================================
+    // OPSI DOWNLOAD PDF PEMBUATAN DOKUMEN DINAS RASIO BERSIH (TAB BARU)
+    // =========================================================================
+    function openPrintReport() {
+        const reportWindow = window.open('', '_blank');
+        const tglSekarang = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
         
-        // Sembunyikan tombol navigasi sebelum render PDF dimulai
-        document.getElementById('btn-add-seg').style.display = 'none';
-        document.getElementById('btn-calc').style.display = 'none';
-        document.getElementById('btn-pdf').style.display = 'none';
-        document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'none');
+        const elD = parseFloat(document.getElementById('el_dasar').value).toFixed(2);
+        const elPmp = parseFloat(document.getElementById('el_pmp').value).toFixed(2);
+        const tA = parseFloat(document.getElementById('t_air').value).toFixed(2);
+        const Q = parseFloat(document.getElementById('debit').value).toFixed(2);
+        const hP = parseFloat(document.getElementById('head_pmp').value).toFixed(2);
+        const method = document.getElementById('calc_method').value === 'HW' ? "Hazen-Williams" : "Darcy-Weisbach";
+        const totalK = document.getElementById('total-k-val').innerText;
 
-        // AKTIFKAN MODE CETAK: Ubah susunan layout menjadi satu kolom vertikal yang pas di kertas A4
-        isPrintingPdf = true;
-        targetElement.classList.add('mode-cetak-pdf');
+        const statusKecepatanText = document.getElementById('status-kecepatan').innerText;
+        const statusHeadText = document.getElementById('status-head').innerText;
+        const vIsOk = statusKecepatanText.includes('MEMENUHI') && !statusKecepatanText.includes('TIDAK');
+        const hIsOk = statusHeadText.includes('MEMENUHI') && !statusHeadText.includes('TIDAK');
 
-        // Hitung ulang grafik agar resolusinya langsung menyesuaikan ruang baru
-        runSimulation();
+        let fittingRowsHTML = fittingData.filter(f => f.qty > 0).map(f => `
+            <tr>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: left;">${f.name}</td>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace;">${f.k.toFixed(2)}</td>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold;">${f.qty}</td>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace; font-weight: bold;">${(f.k * f.qty).toFixed(2)}</td>
+            </tr>
+        `).join('');
 
-        const opsiWaktu = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        const tglHariIni = new Date().toLocaleDateString('id-ID', opsiWaktu).replace(/\//g, '-');
-        const namaFileLaporan = `Laporan_Perhitungan_Energi_Pipa_${tglHariIni}.pdf`;
+        if (fittingRowsHTML === '') {
+            fittingRowsHTML = `<tr><td colspan="4" style="padding: 10px; color: #64748b; font-style: italic;">Tidak ada aksesoris tambahan terpilih</td></tr>`;
+        }
 
-        const opsiPdf = {
-            margin:       [10, 10, 10, 10], 
-            filename:     namaFileLaporan,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2,           // Jaga teks & grafik tajam
-                useCORS: true, 
-                logging: false,
-                scrollX: 0,
-                scrollY: 0
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] } // Membaca class pembatas halaman buatan kita secara akurat
-        };
+        let resultRowsHTML = cachedResults.map((r, idx) => `
+            <tr style="${idx < 2 ? 'background-color: #fffbeb; font-weight: bold;' : ''}">
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: left;">${r.name}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center;">${r.info}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace;">${r.L.toFixed(1)}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace; font-weight: bold; color: ${idx < 2 ? '#0f172a' : (r.v >= 1.5 && r.v <= 2.5 ? '#10b981' : '#ef4444')}">${idx < 2 ? '-' : r.v.toFixed(2)}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace;">${r.f}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace;">${r.hw.toFixed(3)}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace;">${r.hgl.toFixed(2)}</td>
+                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; font-family: monospace; font-weight: bold; color: ${idx === 0 ? '#0f172a' : (r.res >= 1.0 ? '#10b981' : '#ef4444')}">${idx === 0 ? '-' : r.res.toFixed(2) + ' m'}</td>
+            </tr>
+        `).join('');
 
-        // Render HTML ke PDF
-        html2pdf().set(opsiPdf).from(targetElement).save().then(() => {
-            // KEMBALIKAN KE LAYOUT NORMAL: Jika proses unduh sudah selesai
-            isPrintingPdf = false;
-            targetElement.classList.remove('mode-cetak-pdf');
-            
-            document.getElementById('btn-add-seg').style.display = 'block';
-            document.getElementById('btn-calc').style.display = 'block';
-            document.getElementById('btn-pdf').style.display = 'block';
-            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
-            
-            runSimulation();
-        }).catch((err) => {
-            console.error("Gagal membuat PDF:", err);
-            isPrintingPdf = false;
-            targetElement.classList.remove('mode-cetak-pdf');
-            
-            document.getElementById('btn-add-seg').style.display = 'block';
-            document.getElementById('btn-calc').style.display = 'block';
-            document.getElementById('btn-pdf').style.display = 'block';
-            document.querySelectorAll('.btn-delete').forEach(b => b.style.display = 'block');
-            
-            runSimulation();
+        const allX = cachedResults.map(r => r.x1).concat(cachedResults.map(r => r.x2));
+        const allY = cachedResults.map(r => r.hgl).concat(cachedResults.map(r => r.y2));
+        const minX = Math.min(...allX); const maxX = Math.max(...allX);
+        const minY = Math.min(...allY) - 2; const maxY = Math.max(...allY) + 5;
+
+        const svgW = 750, svgH = 300, mX = 80, mY = 50;
+        const scaleX = (svgW - mX * 2) / (maxX - minX || 1);
+        const scaleY = (svgH - mY * 2) / (maxY - minY || 1);
+        const svgX = v => mX + (v - minX) * scaleX;
+        const svgY = v => svgH - mY - (v - minY) * scaleY;
+
+        let svgHTML = `<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; margin: 15px 0;">`;
+        for (let i = 0; i <= 4; i++) {
+            let yVal = minY + (maxY - minY) * (i / 4);
+            svgHTML += `<line x1="${mX}" y1="${svgY(yVal)}" x2="${svgW - mX}" y2="${svgY(yVal)}" stroke="#f1f5f9" stroke-width="1.5"/>`;
+            svgHTML += `<text x="${mX - 12}" y="${svgY(yVal) + 3.5}" font-family="monospace" font-size="9" fill="#475569" text-anchor="end">${yVal.toFixed(1)}m</text>`;
+        }
+        let pipePts = `${svgX(cachedResults[1].x1)},${svgY(cachedResults[1].y1)} `;
+        let hglPts = `${svgX(cachedResults[1].x1)},${svgY(cachedResults[0].hgl)} `;
+        let eglPts = `${svgX(cachedResults[1].x1)},${svgY(cachedResults[0].hgl)} `;
+        cachedResults.forEach((r, idx) => {
+            if (idx >= 1) {
+                pipePts += `${svgX(r.x2)},${svgY(r.y2)} `;
+                hglPts += `${svgX(r.x2)},${svgY(r.hgl)} `;
+                eglPts += `${svgX(r.x2)},${svgY(r.hgl + r.vH)} `;
+            }
         });
+        svgHTML += `<polyline points="${pipePts}" fill="none" stroke="#f59e0b" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+        svgHTML += `<polyline points="${hglPts}" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linejoin="round"/>`;
+        svgHTML += `<polyline points="${eglPts}" fill="none" stroke="#06b6d4" stroke-width="1.8" stroke-dasharray="5,4"/>`;
+        cachedResults.forEach((r, idx) => {
+            if (idx >= 1) {
+                svgHTML += `<circle cx="${svgX(r.x2)}" cy="${svgY(r.y2)}" r="4" fill="#0f172a"/>`;
+                svgHTML += `<text x="${svgX(r.x2)}" y="${svgH - mY + 15}" font-family="Arial" font-size="8.5" fill="#475569" text-anchor="middle">${r.x2.toFixed(0)}m</text>`;
+            }
+        });
+        svgHTML += `<line x1="${mX}" y1="${svgH - mY}" x2="${svgW - mX}" y2="${svgH - mY}" stroke="#475569" stroke-width="1.5"/>`;
+        svgHTML += `</svg>`;
+
+        reportWindow.document.write(`
+            <html>
+            <head>
+                <title>Laporan_Teknis_Hidrolis_SDA</title>
+                <style>
+                    body { font-family: Arial, sans-serif; color: #0f172a; padding: 20mm 15mm; margin: 0; background: #ffffff; line-height: 1.5; }
+                    .kop { text-align: center; border-bottom: 4px double #0f172a; padding-bottom: 10px; margin-bottom: 25px; }
+                    .kop h1 { margin: 0; font-size: 1.35rem; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .kop h2 { margin: 5px 0 0 0; font-size: 0.95rem; font-weight: normal; color: #334155; }
+                    .meta-table { width: 100%; font-size: 0.85rem; margin-bottom: 25px; border-collapse: collapse; }
+                    .meta-table td { padding: 4px 0; vertical-align: top; }
+                    .section-title { font-size: 1rem; font-weight: bold; border-left: 4px solid #f59e0b; padding-left: 8px; margin: 25px 0 12px 0; text-transform: uppercase; color: #0f172a; }
+                    .param-grid { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    .param-card { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px; width: 33.33%; font-size: 0.8rem; }
+                    .label-p { font-size: 0.65rem; color: #64748b; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+                    .val-p { font-size: 1.05rem; font-weight: bold; color: #0f172a; }
+                    table.data-t { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 12px 0 20px 0; }
+                    table.data-t th { background: #0f172a; color: white; padding: 10px 8px; border: 1px solid #94a3b8; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.3px; }
+                    table.data-t td { padding: 8px 8px; border: 1px solid #cbd5e1; text-align: center; }
+                    .legend { text-align: center; font-size: 0.75rem; margin-top: 5px; margin-bottom: 20px; }
+                    .leg-item { display: inline-block; margin: 0 12px; font-weight: 500; }
+                    .compliance-box { border: 1px solid #cbd5e1; border-left: 4px solid #0f172a; background: #f8fafc; padding: 15px; margin-bottom: 25px; border-radius: 4px; }
+                    .badge-status { display: inline-block; padding: 3px 8px; border-radius: 4px; color: white; font-weight: bold; font-size: 0.75rem; }
+                    .page-break { page-break-before: always; }
+                    .sig-table { width: 100%; margin-top: 45px; font-size: 0.85rem; border-collapse: collapse; }
+                    .sig-table td { width: 50%; text-align: center; vertical-align: top; }
+                </style>
+            </head>
+            <body>
+                <div class="kop">
+                    <h1>Suku Dinas Sumber Daya Air Kota Administrasi Jakarta Selatan</h1>
+                    <h2>Seksi Perencanaan Teknis dan Aliran Komparatif Jaringan Distribusi Air</h2>
+                </div>
+                
+                <table class="meta-table">
+                    <tr><td style="width:18%; font-weight:bold; color: #334155;">Nomor Dokumen</td><td style="width:3%;">:</td><td>SDA-JS/RENTEK/2026/089</td></tr>
+                    <tr><td style="font-weight:bold; color: #334155;">Tanggal Tarikan</td><td>:</td><td>${tglSekarang}</td></tr>
+                    <tr><td style="font-weight:bold; color: #334155;">Perihal</td><td>:</td><td><strong>Laporan Hasil Analisis Hidrolis dan Kehilangan Energi Jaringan Pipa Transmisi Utama</strong></td></tr>
+                </table>
+
+                <div class="section-title">1. Parameter Input Sistem Jaringan</div>
+                <table class="param-grid">
+                    <tr>
+                        <td class="param-card"><div class="label-p">El. Dasar Reservoir</div><div class="val-p">${elD} m</div></td>
+                        <td class="param-card"><div class="label-p">El. As Pompa</div><div class="val-p">${elPmp} m</div></td>
+                        <td class="param-card"><div class="label-p">Tinggi Air Aktual</div><div class="val-p">${tA} m</div></td>
+                    </tr>
+                    <tr>
+                        <td class="param-card"><div class="label-p">Debit Aliran Rencana (Q)</div><div class="val-p">${Q} m³/s</div></td>
+                        <td class="param-card"><div class="label-p">Kapasitas Head Pompa</div><div class="val-p">${hP} m</div></td>
+                        <td class="param-card"><div class="label-p">Metode Analisis Rumus</div><div class="val-p">${method}</div></td>
+                    </tr>
+                </table>
+
+                <div class="section-title">2. Distribusi Hambatan Koefisien Fitting Aksesoris (Minor Losses)</div>
+                <table class="data-t">
+                    <thead>
+                        <tr><th>Nama Item Aksesoris / Fitting</th><th>Koefisien Hambatan (K)</th><th>Jumlah Vol (Qty)</th><th>Subtotal Value K</th></tr>
+                    </thead>
+                    <tbody>
+                        ${fittingRowsHTML}
+                        <tr style="background:#f1f5f9; font-weight:bold;">
+                            <td colspan="3" style="text-align:right; padding:10px; font-size:0.85rem;">TOTAL NILAI AKUMULASI HAMBATAN AKSESORIS (&Sigma;K) :</td>
+                            <td style="font-size:0.95rem; color:#d97706; font-family: monospace;">${totalK}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="page-break"></div>
+
+                <div class="section-title">3. Grafik Model Simulasi Profil Profil Gradien Garis Energi</div>
+                ${svgHTML}
+                <div class="legend">
+                    <div class="leg-item"><span style="color:#ef4444; font-weight:bold; font-size:1.2rem; vertical-align:middle;">—</span> Garis Gradien Hidrolis (HGL Line)</div>
+                    <div class="leg-item"><span style="color:#06b6d4; font-weight:bold; font-size:1.2rem; vertical-align:middle;">- -</span> Garis Energi Total (EGL Line)</div>
+                    <div class="leg-item"><span style="color:#f59e0b; font-weight:bold; font-size:1.2rem; vertical-align:middle;">—</span> Jalur Fisik Konstruksi Pipa</div>
+                </div>
+
+                <div class="section-title">4. Matriks Validasi Angka Perhitungan Hidrolis Resmi</div>
+                <table class="data-t">
+                    <thead>
+                        <tr><th>Objek Jalur</th><th>Koef. Pipa</th><th>L (m)</th><th>V (m/s)</th><th>f (Darcy)</th><th>H-Major (m)</th><th>Elev. HGL (m)</th><th>Head Sisa (m)</th></tr>
+                    </thead>
+                    <tbody>
+                        ${resultRowsHTML}
+                    </tbody>
+                </table>
+
+                <div class="page-break"></div>
+
+                <div class="section-title">5. Hasil Evaluasi Kelayakan Ambang Batas Teknis</div>
+                <div class="compliance-box">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                        <tr>
+                            <td style="width:40%; padding:4px 0; font-weight:bold;">Kriteria Kecepatan Aliran Pipa (V)</td>
+                            <td style="width:5%; padding:4px 0;">:</td>
+                            <td style="padding:4px 0;">
+                                <span class="badge-status" style="background-color: ${vIsOk ? '#10b981' : '#ef4444'}">${vIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px 0; font-weight:bold;">Kriteria Sisa Tekanan Ujung (Residual Head)</td>
+                            <td style="padding:4px 0;">:</td>
+                            <td style="padding:4px 0;">
+                                <span class="badge-status" style="background-color: ${hIsOk ? '#10b981' : '#ef4444'}">${hIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <table class="sig-table">
+                    <tr>
+                        <td>
+                            Mengetahui,<br><strong>Kepala Seksi Perencanaan </strong><br>Sudin SDA Jakarta Selatan<br><br><br><br><br>___________________________<br>NIP. 
+                        </td>
+                        <td>
+                            Dibuat Oleh,<br><strong>Tim Perencana Teknis Hidrolis</strong><br>Sudin SDA Jakarta Selatan<br><br><br><br>___________________________<br>NIP. 
+                        </td>
+                    </tr>
+                </table>
+
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        reportWindow.document.close();
     }
 
     window.addEventListener('resize', () => { runSimulation(); });
