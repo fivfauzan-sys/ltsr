@@ -711,24 +711,25 @@
                 <div class="page-break"></div>
 
                 <div class="section-title">5. Hasil Evaluasi Kelayakan Ambang Batas Teknis</div>
-                <div class="compliance-box">
-                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-                        <tr>
-                            <td style="width:40%; padding:4px 0; font-weight:bold;">Kriteria Kecepatan Aliran Pipa (V)</td>
-                            <td style="width:5%; padding:4px 0;">:</td>
-                            <td style="padding:4px 0;">
-                                <span class="badge-status" style="background-color: ${vIsOk ? '#10b981' : '#ef4444'}">${vIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:4px 0; font-weight:bold;">Kriteria Sisa Tekanan Ujung (Residual Head)</td>
-                            <td style="padding:4px 0;">:</td>
-                            <td style="padding:4px 0;">
-                                <span class="badge-status" style="background-color: ${hIsOk ? '#10b981' : '#ef4444'}">${hIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}</span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+// KODE BARU (WARNA TEKS HIJAU / MERAH DINAMIS):
+<div class="compliance-box">
+    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <tr>
+            <td style="width:40%; padding:6px 0; font-weight:bold;">Kriteria Kecepatan Aliran Pipa (V)</td>
+            <td style="width:5%; padding:6px 0;">:</td>
+            <td style="padding:6px 0; font-weight: bold; color: ${vIsOk ? '#10b981' : '#ef4444'}; letter-spacing: 0.5px;">
+                ${vIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:6px 0; font-weight:bold;">Kriteria Sisa Tekanan Ujung (Residual Head)</td>
+            <td style="padding:6px 0;">:</td>
+            <td style="padding:6px 0; font-weight: bold; color: ${hIsOk ? '#10b981' : '#ef4444'}; letter-spacing: 0.5px;">
+                ${hIsOk ? 'MEMENUHI KETENTUAN AMAN' : 'TIDAK MEMENUHI KETENTUAN'}
+            </td>
+        </tr>
+    </table>
+</div>
 
                 <table class="sig-table">
     <tr>
@@ -751,7 +752,7 @@
         </td>
     </tr>
 
-                <script>
+               </table> <script>
                     window.onload = function() {
                         setTimeout(function() {
                             window.print();
