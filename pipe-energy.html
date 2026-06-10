@@ -136,6 +136,10 @@
                 <option value="DW">Metode Darcy-Weisbach (ε)</option>
             </select>
 
+            <div class="card" style="border-top: 4px solid var(--gold);">
+    <label>Nama Project / Lokasi Pekerjaan</label>
+    <input type="text" id="nama_project" value="Pembangunan Jaringan Pipa Transmisi Utama" placeholder="Masukkan nama project..." style="font-weight: bold; border: 1px solid var(--gold);">
+</div>
             <div class="card">
                 <div style="display:flex; gap:10px">
                     <div style="flex:1"><label>El. Dasar Res (m)</label><input type="number" id="el_dasar" value="28.088" onchange="runSimulation()"></div>
@@ -541,7 +545,7 @@
     function openPrintReport() {
         const reportWindow = window.open('', '_blank');
         const tglSekarang = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-        
+        const namaProj = document.getElementById('nama_project').value || "Pembangunan Jaringan Pipa Transmisi Utama";
         const elD = parseFloat(document.getElementById('el_dasar').value).toFixed(2);
         const elPmp = parseFloat(document.getElementById('el_pmp').value).toFixed(2);
         const tA = parseFloat(document.getElementById('t_air').value).toFixed(2);
@@ -657,7 +661,7 @@
                 <table class="meta-table">
                     <tr><td style="width:18%; font-weight:bold; color: #334155;">Nomor Dokumen</td><td style="width:3%;">:</td><td>SDA-JS/RENTEK/2026/089</td></tr>
                     <tr><td style="font-weight:bold; color: #334155;">Tanggal Tarikan</td><td>:</td><td>${tglSekarang}</td></tr>
-                    <tr><td style="font-weight:bold; color: #334155;">Perihal</td><td>:</td><td><strong>Laporan Hasil Analisis Hidrolis dan Kehilangan Energi Jaringan Pipa Transmisi Utama</strong></td></tr>
+                   <tr><td style="font-weight:bold; color: #334155;">Perihal</td><td>:</td><td>Laporan Hasil Analisis Hidrolis dan Kehilangan Energi — <strong style="color: #0b132b; text-transform: uppercase;">${namaProj}</strong></td></tr>
                 </table>
 
                 <div class="section-title">1. Parameter Input Sistem Jaringan</div>
