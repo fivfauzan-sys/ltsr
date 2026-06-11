@@ -5,77 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual Book - SDA Engineering Hub Jakarta Selatan</title>
     <style>
-        :root {
-            --primary: #0f172a;
-            --accent: #f59e0b;
-            --bg: #f8fafc;
-            --text: #334155;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.7;
-            color: var(--text);
-            background: var(--bg);
-            margin: 0;
-            padding: 40px 20px;
-        }
-        .container-manual {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 50px;
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-            border: 1px solid #e2e8f0;
-        }
-        .header-manual {
-            border-bottom: 4px solid var(--accent);
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-        }
+        /* --- STYLE MANUAL BOOK (ORIGINAL) --- */
+        :root { --primary: #0f172a; --accent: #f59e0b; --bg: #f8fafc; --text: #334155; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.7; color: var(--text); background: var(--bg); padding: 40px 20px; }
+        .container-manual { max-width: 900px; margin: 0 auto; background: white; padding: 50px; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
+        .header-manual { border-bottom: 4px solid var(--accent); padding-bottom: 20px; margin-bottom: 40px; }
         h1 { color: var(--primary); margin: 0; font-size: 2.2rem; font-weight: 800; }
         .subtitle { color: #64748b; font-size: 1.1rem; margin-top: 5px; }
-        
         h2 { color: var(--primary); font-size: 1.5rem; margin-top: 40px; border-left: 5px solid var(--accent); padding-left: 15px; }
         h3 { color: var(--primary); font-size: 1.15rem; margin-top: 25px; }
-        
         p { margin-bottom: 20px; text-align: justify; }
         ul, ol { padding-left: 20px; margin-bottom: 25px; }
         li { margin-bottom: 10px; }
-
-        .table-style {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-        }
-        .table-style th, .table-style td {
-            border: 1px solid #e2e8f0;
-            padding: 12px 15px;
-            text-align: left;
-        }
-        .table-style th {
-            background: var(--primary);
-            color: white;
-        }
+        .table-style { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        .table-style th, .table-style td { border: 1px solid #e2e8f0; padding: 12px 15px; text-align: left; }
+        .table-style th { background: var(--primary); color: white; }
         .table-style tr:nth-child(even) { background: #f8fafc; }
-        
-        .code-inline {
-            background: #f1f5f9;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: #0f172a;
-        }
-        .formula-box {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0;
-            color: var(--primary);
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9rem; color: #0f172a; }
+        .formula-box { background: #f1f5f9; padding: 15px; border-radius: 10px; font-family: 'Courier New', Courier, monospace; font-weight: bold; text-align: center; margin: 15px 0; color: var(--primary); }
+
+        /* --- FLOW TIMELINE PREMIUM (INTEGRATED) --- */
+        .flow-timeline { position: relative; max-width: 800px; margin: 50px auto; padding: 20px 0; overflow: hidden; }
+        .flow-timeline::before { content: ""; position: absolute; left: 50%; top: 0; width: 4px; height: 100%; transform: translateX(-50%); background: #dbe4ee; border-radius: 20px; }
+        .flow-timeline::after { content: ""; position: absolute; left: 50%; top: 0; width: 4px; height: 120px; transform: translateX(-50%); background: linear-gradient(to bottom, transparent, #f59e0b, transparent); border-radius: 20px; animation: flowMove 3s linear infinite; }
+        @keyframes flowMove { from { top: -120px; } to { top: 100%; } }
+        .flow-item { position: relative; display: flex; justify-content: center; margin: 35px 0; animation: fadeUp .8s ease both; }
+        .flow-item:nth-child(1) { animation-delay: 0s; }
+        .flow-item:nth-child(2) { animation-delay: .1s; }
+        .flow-item:nth-child(3) { animation-delay: .2s; }
+        .flow-item:nth-child(4) { animation-delay: .3s; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .flow-node { width: 24px; height: 24px; border-radius: 50%; background: #f59e0b; border: 5px solid #fff; box-shadow: 0 0 0 5px rgba(245,158,11,.15), 0 0 25px rgba(245,158,11,.4); z-index: 3; position: relative; }
+        .flow-card { position: absolute; width: 320px; background: #fff; padding: 16px 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,.06); transition: .3s; }
+        .flow-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(245,158,11,.18); }
+        .left { right: 55%; text-align: right; }
+        .right { left: 55%; }
+        .step { font-size: .75rem; color: #f59e0b; font-weight: 800; letter-spacing: 1px; }
+        .title { font-weight: 700; color: #0f172a; margin-top: 4px; }
+        .desc { font-size: .87rem; color: #64748b; margin-top: 5px; }
+        .module-row { display: flex; justify-content: center; gap: 20px; margin: 50px 0; flex-wrap: wrap; }
+        .module-card { padding: 18px 28px; border-radius: 18px; color: white; font-weight: 700; min-width: 240px; text-align: center; transition: .35s; cursor: pointer; }
+        .module-card:hover { transform: translateY(-5px) scale(1.03); }
+        .pump { background: linear-gradient(135deg,#0f172a,#334155); }
+        .pipe { background: linear-gradient(135deg,#f59e0b,#fbbf24); }
+        .back-module { background: linear-gradient(135deg,#16a34a,#22c55e); }
+        @media(max-width: 768px) {
+            .flow-timeline::before, .flow-timeline::after { left: 32px; }
+            .flow-item { justify-content: flex-start; padding-left: 55px; }
+            .flow-card { position: relative; width: 100%; left: 0 !important; right: auto !important; text-align: left; }
+            .module-card { width: 100%; }
         }
     </style>
 </head>
@@ -88,44 +66,36 @@
     </div>
 
     <h2>1. Flow Penggunaan Aplikasi (User Journey)</h2>
-    <p>Berikut adalah urutan langkah standar operasional untuk mengakses dan menavigasi fitur-fitur di dalam portal utama:</p>
-    
-    <ol>
-        <li><strong>Mengakses Tautan Utama:</strong> Buka alamat URL dashboard resmi melalui peramban (browser) pada perangkat mobile atau PC.</li>
-        <li><strong>Tahap Gerbang Keamanan:</strong> Layar utama akan menampilkan antarmuka terkunci dengan efek kabur (*blur overlay*). Pengguna diwajibkan memasukkan <strong>Kode Verifikasi Internal</strong> yang sah pada kolom sandi.</li>
-        <li><strong>Validasi Sistem:</strong> Tekan tombol <strong>"Masuk Dashboard"</strong> atau tombol *Enter*. Jika kode sesuai, enkripsi visual akan terbuka secara otomatis. Jika salah, sistem akan menolak akses dan memunculkan indikator eror.</li>
-        <li><strong>Pemilihan Modul Analisis:</strong> Setelah masuk ke dashboard utama, pengguna dapat memilih salah satu perangkat teknik (*engineering tools*) yang dibutuhkan:
-            <ul>
-                <li>Klik <strong>"Buka Simulator"</strong> untuk masuk ke modul Pump Storage.</li>
-                <li>Klik <strong>"Buka Calculator"</strong> untuk masuk ke modul Pipe Energy.</li>
-            </ul>
-        </li>
-        <li><strong>Navigasi Kembali:</strong> Saat berada di dalam modul analisis, pengguna dapat berpindah atau kembali ke menu utama kapan saja dengan menekan tombol melayang <strong>"⬅ BACK TO DASHBOARD"</strong> di pojok kiri bawah layar tanpa harus melakukan proses log-in ulang.</li>
-    </ol>
+    <div class="flow-timeline">
+        <div class="flow-item"><div class="flow-node"></div><div class="flow-card left"><div class="step">STEP 01</div><div class="title">Akses Tautan Utama</div><div class="desc">Membuka dashboard SDA Engineering Hub</div></div></div>
+        <div class="flow-item"><div class="flow-node"></div><div class="flow-card right"><div class="step">STEP 02</div><div class="title">Tahap Gerbang Keamanan</div><div class="desc">Masukkan password untuk mengakses sistem</div></div></div>
+        <div class="flow-item"><div class="flow-node"></div><div class="flow-card left"><div class="step">STEP 03</div><div class="title">Validasi Sistem</div><div class="desc">Sistem melakukan verifikasi akses pengguna</div></div></div>
+        <div class="flow-item"><div class="flow-node"></div><div class="flow-card right"><div class="step">STEP 04</div><div class="title">Pemilihan Modul Analisis</div><div class="desc">Pilih modul yang akan digunakan</div></div></div>
+    </div>
+    <div class="module-row">
+        <div class="module-card pump">🚀 Pump Storage Simulator</div>
+        <div class="module-card pipe">⚙️ Pipe Energy Calculator</div>
+    </div>
+    <div class="module-row"><div class="module-card back-module">⬅️ Navigasi Kembali (BACK)</div></div>
 
     <h2>2. Buku Manual Operasional & Parameter Teknis</h2>
     <p>Bagian ini menjelaskan instruksi penginputan data parameter pada masing-masing modul beserta landasan rumus hidrolika yang digunakan oleh sistem dalam memproses kalkulasi.</p>
     
     <h3>A. Modul: Pump Storage Simulator</h3>
     <p>Modul ini dirancang untuk mensimulasikan fluktuasi air pada kolam olakan stasiun pompa guna mencegah limpasan banjir.</p>
-    
     <h4>Data yang Harus Diinput Pengguna:</h4>
     <ul>
         <li><strong>Tinggi Muka Air (TMA) Awal (meter):</strong> Ketinggian muka air aktual eksisting di dalam kolam olakan sebelum unit pompa dioperasikan.</li>
         <li><strong>Debit Banjir Masuk / Inflow (m³/detik):</strong> Volume air per detik yang mengalir masuk ke kolam olakan dari saluran drainase utama wilayah.</li>
         <li><strong>Kapasitas Pompa / Outflow (m³/detik):</strong> Total daya sedot/buang dari kombinasi unit-unit pompa pengendali banjir yang sedang aktif beroperasi.</li>
     </ul>
-
     <h4>Rumus Hidrolika yang Digunakan:</h4>
     <p>Simulasi perubahan volume tampungan kolam dihitung berdasarkan hukum kekekalan massa (Persamaan Kontinuitas):</p>
-    <div class="formula-box">
-        ΔV = (Q_inflow - Q_outflow) × Δt
-    </div>
+    <div class="formula-box">ΔV = (Q_inflow - Q_outflow) × Δt</div>
     <p>Dimana <span class="code-inline">ΔV</span> adalah perubahan volume tampungan kolam, dan <span class="code-inline">Δt</span> adalah interval waktu operasional pompa. Sistem akan mengonversi hasil perubahan volume ini menjadi representasi visual fluktuasi TMA.</p>
 
     <h3>B. Modul: Pipe Energy Calculator</h3>
     <p>Modul ini digunakan untuk menganalisis kehilangan tinggi tekan (*head loss*) akibat gesekan pada pipa penyalur cairan (*discharge pipe*).</p>
-    
     <h4>Data yang Harus Diinput Pengguna:</h4>
     <ul>
         <li><strong>Diameter Dalam Pipa (mm):</strong> Ukuran penampang bersih bagian dalam pipa yang dilewati air.</li>
@@ -133,51 +103,21 @@
         <li><strong>Debit Aliran Cairan (Liter/detik atau m³/detik):</strong> Besaran laju volume aliran rencana yang dipompa melalui jaringan tersebut.</li>
         <li><strong>Jenis Material Pipa:</strong> Pilihan material untuk menentukan variabel tingkat kekasaran dinding dalam pipa.</li>
     </ul>
-
     <h4>Dua Pilihan Metode Rumus yang Digunakan:</h4>
-    
     <p><strong>1. Metode Hazen-Williams</strong> (Umum digunakan untuk analisis praktis pipa tekan air bersih/banjir):</p>
-    <div class="formula-box">
-        h_f = 10.67 × L × Q^1.852 / (C^1.852 × D^4.87)
-    </div>
-    <p>Dimana <span class="code-inline">h_f</span> adalah kehilangan energi akibat gesekan (meter), <span class="code-inline">L</span> panjang pipa (m), <span class="code-inline">Q</span> debit (m³/s), <span class="code-inline">D</span> diameter pipa (m), dan <span class="code-inline">C</span> adalah Koefisien Kekasaran Hazen-Williams.</p>
-
+    <div class="formula-box">h_f = 10.67 × L × Q^1.852 / (C^1.852 × D^4.87)</div>
     <p><strong>2. Metode Darcy-Weisbach</strong> (Pendekatan teoritis dengan tingkat akurasi tinggi):</p>
-    <div class="formula-box">
-        h_f = f × (L / D) × (v² / 2g)
-    </div>
-    <p>Dimana <span class="code-inline">f</span> merupakan faktor gesekan pipa (yang diturunkan dari Bilangan Reynolds dan kekasaran absolut material), <span class="code-inline">v</span> kecepatan aliran cairan di dalam pipa (m/s), dan <span class="code-inline">g</span> gaya gravitasi bumi (9.81 m/s²).</p>
-
+    <div class="formula-box">h_f = f × (L / D) × (v² / 2g)</div>
     <h4>Referensi Koefisien Kekasaran Material:</h4>
     <table class="table-style">
         <thead>
-            <tr>
-                <th>Material Pipa Eksisting</th>
-                <th>Koefisien Hazen-Williams (C)</th>
-                <th>Kekasaran Absolut Darcy (ε - mm)</th>
-            </tr>
+            <tr><th>Material Pipa Eksisting</th><th>Koefisien Hazen-Williams (C)</th><th>Kekasaran Absolut Darcy (ε - mm)</th></tr>
         </thead>
         <tbody>
-            <tr>
-                <td>PVC / Polyethylene (HDPE)</td>
-                <td>140 - 150</td>
-                <td>0.0015 - 0.007</td>
-            </tr>
-            <tr>
-                <td>Ductile Iron Pipe (DIP)</td>
-                <td>130</td>
-                <td>0.25</td>
-            </tr>
-            <tr>
-                <td>Welded Steel (Baja Las)</td>
-                <td>120</td>
-                <td>0.045</td>
-            </tr>
-            <tr>
-                <td>Beton (Concrete)</td>
-                <td>100 - 110</td>
-                <td>0.3 - 3.0</td>
-            </tr>
+            <tr><td>PVC / Polyethylene (HDPE)</td><td>140 - 150</td><td>0.0015 - 0.007</td></tr>
+            <tr><td>Ductile Iron Pipe (DIP)</td><td>130</td><td>0.25</td></tr>
+            <tr><td>Welded Steel (Baja Las)</td><td>120</td><td>0.045</td></tr>
+            <tr><td>Beton (Concrete)</td><td>100 - 110</td><td>0.3 - 3.0</td></tr>
         </tbody>
     </table>
 </div>
